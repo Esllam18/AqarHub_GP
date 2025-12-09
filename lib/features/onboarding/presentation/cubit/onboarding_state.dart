@@ -1,0 +1,28 @@
+import 'package:equatable/equatable.dart';
+
+abstract class OnboardingState extends Equatable {
+  const OnboardingState();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class OnboardingInitial extends OnboardingState {
+  final int currentPage;
+
+  const OnboardingInitial({this.currentPage = 0});
+
+  @override
+  List<Object?> get props => [currentPage];
+}
+
+class OnboardingPageChanged extends OnboardingState {
+  final int currentPage;
+
+  const OnboardingPageChanged(this.currentPage);
+
+  @override
+  List<Object?> get props => [currentPage];
+}
+
+class OnboardingCompleted extends OnboardingState {}

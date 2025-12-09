@@ -1,3 +1,5 @@
+import 'package:aqar_hub_gp/features/splash/presentation/cubit/splash_cubit.dart';
+import 'package:aqar_hub_gp/features/splash/presentation/views/splash_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -8,14 +10,14 @@ final router = GoRouter(
   initialLocation: RouteNames.splash,
   routes: [
     // Splash Screen
-    // GoRoute(
-    //   path: RouteNames.splash,
-    //   name: RouteNames.splash,
-    //   builder: (context, state) => BlocProvider(
-    //     create: (context) => SplashCubit(),
-    //     child: const SplashView(),
-    //   ),
-    // ),
+    GoRoute(
+      path: RouteNames.splash,
+      name: RouteNames.splash,
+      builder: (context, state) => BlocProvider(
+        create: (context) => SplashCubit(),
+        child: const SplashView(),
+      ),
+    ),
 
     // Onboarding Screen
     // GoRoute(

@@ -17,7 +17,6 @@ class CompleteProfileUseCase {
       uid: uid,
       firstName: firstName,
       lastName: lastName,
-      email: email,
       city: city,
     );
   }

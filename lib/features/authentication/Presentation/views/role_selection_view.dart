@@ -1,8 +1,8 @@
 import 'package:aqar_hub_gp/core/consts/app_colors.dart';
-import 'package:aqar_hub_gp/core/consts/app_strings.dart';
 import 'package:aqar_hub_gp/core/enums/user_role.dart';
 import 'package:aqar_hub_gp/core/router/route_names.dart';
 import 'package:aqar_hub_gp/core/services/navigation_service.dart';
+import 'package:aqar_hub_gp/core/strings/auth_strings.dart';
 import 'package:aqar_hub_gp/core/utils/responsive_helper.dart';
 import 'package:aqar_hub_gp/core/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';

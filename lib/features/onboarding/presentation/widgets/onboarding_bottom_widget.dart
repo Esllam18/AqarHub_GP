@@ -1,4 +1,4 @@
-import 'package:aqar_hub_gp/core/consts/app_strings.dart';
+import 'package:aqar_hub_gp/core/strings/onboarding_strings.dart';
 import 'package:aqar_hub_gp/core/utils/responsive_helper.dart';
 import 'package:aqar_hub_gp/features/onboarding/data/datasources/onboarding_data.dart';
 import 'package:flutter/material.dart';

@@ -4,12 +4,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 import '../models/user_model.dart';
 
 abstract class AuthRemoteDataSource {
-  Future<UserCredential> signInWithPhone(String verificationId, String smsCode);
-  Future<void> verifyPhoneNumber(
-    String phoneNumber,
-    Function(String) onCodeSent,
-    Function(String) onError,
-  );
+  Future<UserCredential> signInWithEmail(String email, String password);
+  Future<UserCredential> signUpWithEmail(String email, String password);
+  Future<void> sendPasswordResetEmail(String email);
   Future<UserCredential> signInWithGoogle();
   Future<UserModel?> getUserData(String uid);
   Future<void> saveUserData(UserModel user);
@@ -30,37 +27,24 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   });
 
   @override
-  Future<void> verifyPhoneNumber(
-    String phoneNumber,
-    Function(String) onCodeSent,
-    Function(String) onError,
-  ) async {
-    await firebaseAuth.verifyPhoneNumber(
-      phoneNumber: phoneNumber,
-      verificationCompleted: (PhoneAuthCredential credential) async {
-        await firebaseAuth.signInWithCredential(credential);
-      },
-      verificationFailed: (FirebaseAuthException e) {
-        onError(e.message ?? 'فشل التحقق');
-      },
-      codeSent: (String verificationId, int? resendToken) {
-        onCodeSent(verificationId);
-      },
-      codeAutoRetrievalTimeout: (String verificationId) {},
-      timeout: const Duration(seconds: 60),
+  Future<UserCredential> signInWithEmail(String email, String password) async {
+    return await firebaseAuth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
     );
   }
 
   @override
-  Future<UserCredential> signInWithPhone(
-    String verificationId,
-    String smsCode,
-  ) async {
-    final credential = PhoneAuthProvider.credential(
-      verificationId: verificationId,
-      smsCode: smsCode,
+  Future<UserCredential> signUpWithEmail(String email, String password) async {
+    return await firebaseAuth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
     );
-    return await firebaseAuth.signInWithCredential(credential);
+  }
+
+  @override
+  Future<void> sendPasswordResetEmail(String email) async {
+    await firebaseAuth.sendPasswordResetEmail(email: email);
   }
 
   @override
@@ -70,7 +54,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
     final GoogleSignInAuthentication googleAuth =
         await googleUser.authentication;
-
     final credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,

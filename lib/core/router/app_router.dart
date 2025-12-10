@@ -1,85 +1,89 @@
-import 'package:aqar_hub_gp/features/authentication/Presentation/cubit/auth_cubit.dart';
-import 'package:aqar_hub_gp/features/authentication/Presentation/views/complete_profile_view.dart';
-import 'package:aqar_hub_gp/features/authentication/Presentation/views/otp_verification_view.dart';
-import 'package:aqar_hub_gp/features/authentication/Presentation/views/phone_auth_view.dart';
-import 'package:aqar_hub_gp/features/authentication/Presentation/views/role_selection_view.dart';
-import 'package:aqar_hub_gp/features/authentication/Presentation/views/welcome_view.dart';
-import 'package:aqar_hub_gp/features/onboarding/presentation/cubit/onboarding_cubit.dart';
-import 'package:aqar_hub_gp/features/onboarding/presentation/views/onboarding_view.dart';
-import 'package:aqar_hub_gp/features/splash/presentation/cubit/splash_cubit.dart';
-import 'package:aqar_hub_gp/features/splash/presentation/views/splash_view.dart';
+import 'package:aqar_hub_gp/features/home/views/home_view.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-
+import '../../features/authentication/presentation/cubit/auth_cubit.dart';
+import '../../features/authentication/presentation/views/welcome_view.dart';
+import '../../features/authentication/presentation/views/email_auth_view.dart';
+import '../../features/authentication/presentation/views/sign_up_view.dart';
+import '../../features/authentication/presentation/views/forgot_password_view.dart';
+import '../../features/authentication/presentation/views/role_selection_view.dart';
+import '../../features/authentication/presentation/views/complete_profile_view.dart';
 import '../di/injection_container.dart';
 import 'route_names.dart';
 
-final router = GoRouter(
-  initialLocation: RouteNames.splash,
+// Make router a getter instead of a global variable
+GoRouter get router => GoRouter(
+  initialLocation: RouteNames.welcome,
+  debugLogDiagnostics: true,
   routes: [
-    // Splash Screen
-    GoRoute(
-      path: RouteNames.splash,
-      name: RouteNames.splash,
-      builder: (context, state) => BlocProvider(
-        create: (context) => SplashCubit(),
-        child: const SplashView(),
-      ),
-    ),
-
-    // Onboarding Screen
-    GoRoute(
-      path: RouteNames.onboarding,
-      name: RouteNames.onboarding,
-      builder: (context, state) => BlocProvider(
-        create: (context) => OnboardingCubit(),
-        child: const OnboardingView(),
-      ),
-    ),
-
-    // Welcome Screen
+    // Welcome/Splash Screen
     GoRoute(
       path: RouteNames.welcome,
       name: RouteNames.welcome,
-      builder: (context, state) => BlocProvider(
-        create: (context) => sl<AuthCubit>(),
-        child: const WelcomeView(),
+      pageBuilder: (context, state) => _buildPageWithTransition(
+        context: context,
+        state: state,
+        child: BlocProvider(
+          create: (_) => getIt<AuthCubit>(),
+          child: const WelcomeView(),
+        ),
       ),
     ),
 
-    // Phone Auth Screen
+    // Email Login Screen
     GoRoute(
       path: RouteNames.login,
       name: RouteNames.login,
-      builder: (context, state) => BlocProvider(
-        create: (context) => sl<AuthCubit>(),
-        child: const PhoneAuthView(),
+      pageBuilder: (context, state) => _buildPageWithTransition(
+        context: context,
+        state: state,
+        child: BlocProvider(
+          create: (_) => getIt<AuthCubit>(),
+          child: const EmailAuthView(),
+        ),
       ),
     ),
 
-    // OTP Verification Screen
+    // Sign Up Screen
     GoRoute(
-      path: RouteNames.otp,
-      name: RouteNames.otp,
-      builder: (context, state) {
-        final args = state.extra as Map<String, dynamic>;
-        return BlocProvider(
-          create: (context) => sl<AuthCubit>(),
-          child: OtpVerificationView(
-            verificationId: args['verificationId'],
-            phoneNumber: args['phoneNumber'],
-          ),
-        );
-      },
+      path: RouteNames.signUp,
+      name: RouteNames.signUp,
+      pageBuilder: (context, state) => _buildPageWithTransition(
+        context: context,
+        state: state,
+        child: BlocProvider(
+          create: (_) => getIt<AuthCubit>(),
+          child: const SignUpView(),
+        ),
+      ),
+    ),
+
+    // Forgot Password Screen
+    GoRoute(
+      path: RouteNames.forgotPassword,
+      name: RouteNames.forgotPassword,
+      pageBuilder: (context, state) => _buildPageWithTransition(
+        context: context,
+        state: state,
+        child: BlocProvider(
+          create: (_) => getIt<AuthCubit>(),
+          child: const ForgotPasswordView(),
+        ),
+      ),
     ),
 
     // Role Selection Screen
     GoRoute(
       path: RouteNames.roleSelection,
       name: RouteNames.roleSelection,
-      builder: (context, state) => BlocProvider(
-        create: (context) => sl<AuthCubit>(),
-        child: const RoleSelectionView(),
+      pageBuilder: (context, state) => _buildPageWithTransition(
+        context: context,
+        state: state,
+        child: BlocProvider(
+          create: (_) => getIt<AuthCubit>(),
+          child: const RoleSelectionView(),
+        ),
       ),
     ),
 
@@ -87,9 +91,13 @@ final router = GoRouter(
     GoRoute(
       path: RouteNames.completeProfile,
       name: RouteNames.completeProfile,
-      builder: (context, state) => BlocProvider(
-        create: (context) => sl<AuthCubit>(),
-        child: const CompleteProfileView(),
+      pageBuilder: (context, state) => _buildPageWithTransition(
+        context: context,
+        state: state,
+        child: BlocProvider(
+          create: (_) => getIt<AuthCubit>(),
+          child: const CompleteProfileView(),
+        ),
       ),
     ),
 
@@ -97,13 +105,61 @@ final router = GoRouter(
     GoRoute(
       path: RouteNames.home,
       name: RouteNames.home,
-      builder: (context, state) {
-        final user = state.extra as dynamic;
-        return BlocProvider(
-          create: (context) => sl<AuthCubit>(),
-          child: HomeView(user: user),
-        );
-      },
+      pageBuilder: (context, state) => _buildPageWithTransition(
+        context: context,
+        state: state,
+        child: const HomeView(),
+      ),
     ),
   ],
+
+  // Error handling
+  errorBuilder: (context, state) => Scaffold(
+    body: Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.error_outline, size: 80, color: Colors.red),
+          const SizedBox(height: 16),
+          Text(
+            'خطأ في التنقل',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[800],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            state.error.toString(),
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton(
+            onPressed: () => context.go(RouteNames.welcome),
+            child: const Text('العودة للرئيسية'),
+          ),
+        ],
+      ),
+    ),
+  ),
 );
+
+// Custom page transition
+CustomTransitionPage _buildPageWithTransition({
+  required BuildContext context,
+  required GoRouterState state,
+  required Widget child,
+}) {
+  return CustomTransitionPage(
+    key: state.pageKey,
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return FadeTransition(
+        opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+        child: child,
+      );
+    },
+  );
+}

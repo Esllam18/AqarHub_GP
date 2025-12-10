@@ -12,41 +12,22 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<String, void>> verifyPhoneNumber(
-    String phoneNumber,
-    Function(String) onCodeSent,
+  Future<Either<String, UserEntity>> signInWithEmail(
+    String email,
+    String password,
   ) async {
     try {
-      await remoteDataSource.verifyPhoneNumber(
-        phoneNumber,
-        onCodeSent,
-        (error) => throw Exception(error),
+      final userCredential = await remoteDataSource.signInWithEmail(
+        email,
+        password,
       );
-      return const Right(null);
-    } catch (e) {
-      return Left(e.toString());
-    }
-  }
-
-  @override
-  Future<Either<String, UserEntity>> signInWithPhone(
-    String verificationId,
-    String smsCode,
-  ) async {
-    try {
-      final userCredential = await remoteDataSource.signInWithPhone(
-        verificationId,
-        smsCode,
-      );
-
       final uid = userCredential.user!.uid;
       UserModel? userData = await remoteDataSource.getUserData(uid);
 
       if (userData == null) {
-        // New user - create default profile
         userData = UserModel(
           uid: uid,
-          phoneNumber: userCredential.user!.phoneNumber,
+          email: userCredential.user!.email,
           role: UserRole.user,
           createdAt: DateTime.now(),
           isProfileComplete: false,
@@ -63,15 +44,54 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Either<String, UserEntity>> signUpWithEmail(
+    String email,
+    String password,
+  ) async {
+    try {
+      final userCredential = await remoteDataSource.signUpWithEmail(
+        email,
+        password,
+      );
+      final uid = userCredential.user!.uid;
+
+      final userData = UserModel(
+        uid: uid,
+        email: email,
+        role: UserRole.user,
+        createdAt: DateTime.now(),
+        isProfileComplete: false,
+      );
+
+      await remoteDataSource.saveUserData(userData);
+      return Right(userData);
+    } on FirebaseAuthException catch (e) {
+      return Left(_getFirebaseErrorMessage(e));
+    } catch (e) {
+      return Left('حدث خطأ غير متوقع');
+    }
+  }
+
+  @override
+  Future<Either<String, void>> sendPasswordResetEmail(String email) async {
+    try {
+      await remoteDataSource.sendPasswordResetEmail(email);
+      return const Right(null);
+    } on FirebaseAuthException catch (e) {
+      return Left(_getFirebaseErrorMessage(e));
+    } catch (e) {
+      return Left('حدث خطأ في إرسال البريد');
+    }
+  }
+
+  @override
   Future<Either<String, UserEntity>> signInWithGoogle() async {
     try {
       final userCredential = await remoteDataSource.signInWithGoogle();
       final uid = userCredential.user!.uid;
-
       UserModel? userData = await remoteDataSource.getUserData(uid);
 
       if (userData == null) {
-        // New user from Google
         userData = UserModel(
           uid: uid,
           email: userCredential.user!.email,
@@ -110,7 +130,6 @@ class AuthRepositoryImpl implements AuthRepository {
     required String uid,
     String? firstName,
     String? lastName,
-    String? email,
     String? city,
   }) async {
     try {
@@ -120,10 +139,10 @@ class AuthRepositoryImpl implements AuthRepository {
       final updatedUser = userData.copyWith(
         firstName: firstName,
         lastName: lastName,
-        email: email,
         city: city,
         isProfileComplete: true,
       );
+
       await remoteDataSource.saveUserData(updatedUser);
       return const Right(null);
     } catch (e) {
@@ -168,14 +187,22 @@ class AuthRepositoryImpl implements AuthRepository {
 
   String _getFirebaseErrorMessage(FirebaseAuthException e) {
     switch (e.code) {
-      case 'invalid-verification-code':
-        return 'رمز التحقق غير صحيح';
-      case 'invalid-phone-number':
-        return 'رقم الجوال غير صحيح';
-      case 'quota-exceeded':
-        return 'تم تجاوز الحد المسموح. حاول لاحقاً';
-      case 'session-expired':
-        return 'انتهت صلاحية الجلسة. حاول مرة أخرى';
+      case 'invalid-email':
+        return 'البريد الإلكتروني غير صحيح';
+      case 'user-disabled':
+        return 'هذا الحساب معطل';
+      case 'user-not-found':
+        return 'المستخدم غير موجود';
+      case 'wrong-password':
+        return 'كلمة المرور غير صحيحة';
+      case 'email-already-in-use':
+        return 'البريد الإلكتروني مستخدم بالفعل';
+      case 'weak-password':
+        return 'كلمة المرور ضعيفة';
+      case 'operation-not-allowed':
+        return 'العملية غير مسموح بها';
+      case 'too-many-requests':
+        return 'عدد كبير من المحاولات. حاول لاحقاً';
       default:
         return e.message ?? 'حدث خطأ في المصادقة';
     }

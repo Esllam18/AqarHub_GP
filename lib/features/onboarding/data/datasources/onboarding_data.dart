@@ -1,6 +1,6 @@
 import 'package:aqar_hub_gp/core/consts/app_assets.dart';
+import 'package:aqar_hub_gp/core/strings/onboarding_strings.dart';
 
-import '../../../../core/consts/app_strings.dart';
 import '../models/onboarding_model.dart';
 
 class OnboardingData {

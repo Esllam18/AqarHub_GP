@@ -1,9 +1,9 @@
-import 'package:aqar_hub_gp/core/router/app_router.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:aqar_hub_gp/core/di/injection_container.dart' as injector;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'core/di/injection_container.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'core/router/app_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,8 +11,8 @@ void main() async {
   // Initialize Firebase
   await Firebase.initializeApp();
 
-  // Initialize Dependencies
-  await initializeDependencies();
+  // Initialize Dependencies (NO GetIt!)
+  await injector.init();
 
   // Lock orientation to portrait
   await SystemChrome.setPreferredOrientations([

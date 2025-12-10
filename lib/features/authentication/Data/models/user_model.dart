@@ -1,4 +1,4 @@
-import 'package:aqar_hub_gp/features/authentication/Domain/entities/user_entity.dart';
+import 'package:aqar_hub_gp/features/authentication/domain/entities/user_entity.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../core/enums/user_role.dart';
 

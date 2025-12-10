@@ -7,6 +7,7 @@ import 'package:aqar_hub_gp/core/utils/responsive_helper.dart';
 import 'package:aqar_hub_gp/core/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
@@ -45,19 +46,21 @@ class WelcomeView extends StatelessWidget {
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.all(ResponsiveHelper.width(24)),
-        child: Column(
-          children: [
-            const Spacer(),
-            _buildLogo(),
-            SizedBox(height: ResponsiveHelper.height(40)),
-            const AuthHeader(
-              title: AuthStrings.welcomeTitle,
-              subtitle: AuthStrings.welcomeSubtitle,
-            ),
-            const Spacer(),
-            _buildButtons(context, state),
-            SizedBox(height: ResponsiveHelper.height(24)),
-          ],
+        child: Center(
+          child: Column(
+            children: [
+              const Spacer(),
+              _buildLogo(),
+              SizedBox(height: ResponsiveHelper.height(40)),
+              const AuthHeader(
+                title: AuthStrings.welcomeTitle,
+                subtitle: AuthStrings.welcomeSubtitle,
+              ),
+              const Spacer(),
+              _buildButtons(context, state),
+              SizedBox(height: ResponsiveHelper.height(24)),
+            ],
+          ),
         ),
       ),
     );
@@ -65,7 +68,7 @@ class WelcomeView extends StatelessWidget {
 
   Widget _buildLogo() {
     return Image.asset(
-      'assets/logo/logo.jpg',
+      AppImages.logo,
       width: ResponsiveHelper.width(150),
       height: ResponsiveHelper.height(150),
     );
@@ -107,7 +110,8 @@ class WelcomeView extends StatelessWidget {
         AuthStrings.continueAsGuest,
         style: TextStyle(
           fontSize: ResponsiveHelper.fontSize(16),
-          fontWeight: FontWeight.w600,
+          fontFamily: GoogleFonts.cairo().fontFamily,
+          fontWeight: FontWeight.w400,
           color: AppColors.primary.withOpacity(0.7),
         ),
       ),

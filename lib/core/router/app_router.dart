@@ -1,5 +1,8 @@
 import 'package:aqar_hub_gp/features/home/views/home_view.dart';
-import 'package:flutter/material.dart';
+import 'package:aqar_hub_gp/features/onboarding/presentation/cubit/onboarding_cubit.dart';
+import 'package:aqar_hub_gp/features/onboarding/presentation/views/onboarding_view.dart';
+import 'package:aqar_hub_gp/features/splash/presentation/cubit/splash_cubit.dart';
+import 'package:aqar_hub_gp/features/splash/presentation/views/splash_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/authentication/presentation/cubit/auth_cubit.dart';
@@ -12,36 +15,46 @@ import '../../features/authentication/presentation/views/complete_profile_view.d
 import '../di/injection_container.dart';
 import 'route_names.dart';
 
-// Make router a getter instead of a global variable
-GoRouter get router => GoRouter(
-  initialLocation: RouteNames.welcome,
-  debugLogDiagnostics: true,
+final GoRouter router = GoRouter(
+  initialLocation: RouteNames.splash,
   routes: [
-    // Welcome/Splash Screen
+    // Splash Screen
     GoRoute(
-      path: RouteNames.welcome,
-      name: RouteNames.welcome,
-      pageBuilder: (context, state) => _buildPageWithTransition(
-        context: context,
-        state: state,
-        child: BlocProvider(
-          create: (_) => getIt<AuthCubit>(),
-          child: const WelcomeView(),
-        ),
+      path: RouteNames.splash,
+      name: RouteNames.splash,
+      builder: (context, state) => BlocProvider<SplashCubit>(
+        create: (context) => SplashCubit(),
+        child: const SplashView(),
       ),
     ),
 
-    // Email Login Screen
+    // Onboarding Screen
+    GoRoute(
+      path: RouteNames.onboarding,
+      name: RouteNames.onboarding,
+      builder: (context, state) => BlocProvider<OnboardingCubit>(
+        create: (context) => OnboardingCubit(),
+        child: const OnboardingView(),
+      ),
+    ),
+
+    // Welcome Screen
+    GoRoute(
+      path: RouteNames.welcome,
+      name: RouteNames.welcome,
+      builder: (context, state) => BlocProvider<AuthCubit>(
+        create: (context) => getIt<AuthCubit>(),
+        child: const WelcomeView(),
+      ),
+    ),
+
+    // Email / Login Screen
     GoRoute(
       path: RouteNames.login,
       name: RouteNames.login,
-      pageBuilder: (context, state) => _buildPageWithTransition(
-        context: context,
-        state: state,
-        child: BlocProvider(
-          create: (_) => getIt<AuthCubit>(),
-          child: const EmailAuthView(),
-        ),
+      builder: (context, state) => BlocProvider<AuthCubit>(
+        create: (context) => getIt<AuthCubit>(),
+        child: const EmailAuthView(),
       ),
     ),
 
@@ -49,13 +62,9 @@ GoRouter get router => GoRouter(
     GoRoute(
       path: RouteNames.signUp,
       name: RouteNames.signUp,
-      pageBuilder: (context, state) => _buildPageWithTransition(
-        context: context,
-        state: state,
-        child: BlocProvider(
-          create: (_) => getIt<AuthCubit>(),
-          child: const SignUpView(),
-        ),
+      builder: (context, state) => BlocProvider<AuthCubit>(
+        create: (context) => getIt<AuthCubit>(),
+        child: const SignUpView(),
       ),
     ),
 
@@ -63,13 +72,9 @@ GoRouter get router => GoRouter(
     GoRoute(
       path: RouteNames.forgotPassword,
       name: RouteNames.forgotPassword,
-      pageBuilder: (context, state) => _buildPageWithTransition(
-        context: context,
-        state: state,
-        child: BlocProvider(
-          create: (_) => getIt<AuthCubit>(),
-          child: const ForgotPasswordView(),
-        ),
+      builder: (context, state) => BlocProvider<AuthCubit>(
+        create: (context) => getIt<AuthCubit>(),
+        child: const ForgotPasswordView(),
       ),
     ),
 
@@ -77,13 +82,9 @@ GoRouter get router => GoRouter(
     GoRoute(
       path: RouteNames.roleSelection,
       name: RouteNames.roleSelection,
-      pageBuilder: (context, state) => _buildPageWithTransition(
-        context: context,
-        state: state,
-        child: BlocProvider(
-          create: (_) => getIt<AuthCubit>(),
-          child: const RoleSelectionView(),
-        ),
+      builder: (context, state) => BlocProvider<AuthCubit>(
+        create: (context) => getIt<AuthCubit>(),
+        child: const RoleSelectionView(),
       ),
     ),
 
@@ -91,13 +92,9 @@ GoRouter get router => GoRouter(
     GoRoute(
       path: RouteNames.completeProfile,
       name: RouteNames.completeProfile,
-      pageBuilder: (context, state) => _buildPageWithTransition(
-        context: context,
-        state: state,
-        child: BlocProvider(
-          create: (_) => getIt<AuthCubit>(),
-          child: const CompleteProfileView(),
-        ),
+      builder: (context, state) => BlocProvider<AuthCubit>(
+        create: (context) => getIt<AuthCubit>(),
+        child: const CompleteProfileView(),
       ),
     ),
 
@@ -105,61 +102,15 @@ GoRouter get router => GoRouter(
     GoRoute(
       path: RouteNames.home,
       name: RouteNames.home,
-      pageBuilder: (context, state) => _buildPageWithTransition(
-        context: context,
-        state: state,
-        child: const HomeView(),
-      ),
+      builder: (context, state) {
+        final user = state.extra as dynamic;
+        return BlocProvider<AuthCubit>(
+          create: (context) => getIt<AuthCubit>(),
+          child: HomeView(user: user),
+        );
+      },
     ),
+
+    // Forgot Password Screen
   ],
-
-  // Error handling
-  errorBuilder: (context, state) => Scaffold(
-    body: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.error_outline, size: 80, color: Colors.red),
-          const SizedBox(height: 16),
-          Text(
-            'خطأ في التنقل',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey[800],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            state.error.toString(),
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton(
-            onPressed: () => context.go(RouteNames.welcome),
-            child: const Text('العودة للرئيسية'),
-          ),
-        ],
-      ),
-    ),
-  ),
 );
-
-// Custom page transition
-CustomTransitionPage _buildPageWithTransition({
-  required BuildContext context,
-  required GoRouterState state,
-  required Widget child,
-}) {
-  return CustomTransitionPage(
-    key: state.pageKey,
-    child: child,
-    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      return FadeTransition(
-        opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
-        child: child,
-      );
-    },
-  );
-}

@@ -1,9 +1,9 @@
+import 'package:aqar_hub_gp/features/authentication/domain/repositories/auth_repository.dart';
 import 'package:dartz/dartz.dart';
 import '../../../../core/enums/user_role.dart';
-import '../../data/repositories/auth_repository_impl.dart';
 
 class UpdateUserRoleUseCase {
-  final AuthRepositoryImpl repository;
+  final AuthRepository repository;
 
   UpdateUserRoleUseCase(this.repository);
 

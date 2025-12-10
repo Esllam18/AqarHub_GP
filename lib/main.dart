@@ -1,26 +1,26 @@
-import 'package:aqar_hub_gp/core/di/injection_container.dart' as injector;
+import 'package:aqar_hub_gp/core/di/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'core/router/app_router.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
+  // 1) Initialize Firebase first
   await Firebase.initializeApp();
 
-  // Initialize Dependencies (NO GetIt!)
-  await injector.init();
+  // 2) Then initialize GetIt + DI
+  await init();
 
-  // Lock orientation to portrait
+  // 3) Lock orientation
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
 
-  // Set system UI style
+  // 4) System UI
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,

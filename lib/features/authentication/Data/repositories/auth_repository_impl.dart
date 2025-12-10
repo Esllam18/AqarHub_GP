@@ -1,5 +1,5 @@
-import 'package:aqar_hub_gp/features/authentication/Domain/entities/user_entity.dart';
-import 'package:aqar_hub_gp/features/authentication/Domain/repositories/auth_repository.dart';
+import 'package:aqar_hub_gp/features/authentication/domain/entities/user_entity.dart';
+import 'package:aqar_hub_gp/features/authentication/domain/repositories/auth_repository.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../../core/enums/user_role.dart';
@@ -10,7 +10,6 @@ class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
 
   AuthRepositoryImpl({required this.remoteDataSource});
-
   @override
   Future<Either<String, UserEntity>> signInWithEmail(
     String email,
@@ -39,6 +38,15 @@ class AuthRepositoryImpl implements AuthRepository {
     } on FirebaseAuthException catch (e) {
       return Left(_getFirebaseErrorMessage(e));
     } catch (e) {
+      // Fallback: check if user is actually signed in
+      final currentUser = remoteDataSource.getCurrentUser();
+      if (currentUser != null) {
+        final userData = await remoteDataSource.getUserData(currentUser.uid);
+        if (userData != null) {
+          return Right(userData);
+        }
+      }
+      print('❌ Unexpected error in signInWithEmail: $e');
       return Left('حدث خطأ غير متوقع');
     }
   }
@@ -195,6 +203,9 @@ class AuthRepositoryImpl implements AuthRepository {
         return 'المستخدم غير موجود';
       case 'wrong-password':
         return 'كلمة المرور غير صحيحة';
+      case 'invalid-credential': // ← ADD THIS
+      case 'INVALID_LOGIN_CREDENTIALS': // ← ADD THIS
+        return 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
       case 'email-already-in-use':
         return 'البريد الإلكتروني مستخدم بالفعل';
       case 'weak-password':
@@ -203,6 +214,8 @@ class AuthRepositoryImpl implements AuthRepository {
         return 'العملية غير مسموح بها';
       case 'too-many-requests':
         return 'عدد كبير من المحاولات. حاول لاحقاً';
+      case 'network-request-failed': // ← ADD THIS
+        return 'تحقق من اتصالك بالإنترنت';
       default:
         return e.message ?? 'حدث خطأ في المصادقة';
     }

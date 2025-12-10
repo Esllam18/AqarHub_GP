@@ -1,4 +1,4 @@
-import 'package:aqar_hub_gp/features/authentication/Domain/repositories/auth_repository.dart';
+import 'package:aqar_hub_gp/features/authentication/domain/repositories/auth_repository.dart';
 import 'package:aqar_hub_gp/features/authentication/data/datasources/auth_remote_datasource.dart';
 import 'package:aqar_hub_gp/features/authentication/data/repositories/auth_repository_impl.dart';
 import 'package:aqar_hub_gp/features/authentication/domain/usecases/complete_profile_usecase.dart';

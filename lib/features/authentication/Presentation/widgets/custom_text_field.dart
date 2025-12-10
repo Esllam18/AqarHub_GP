@@ -10,9 +10,13 @@ class CustomTextField extends StatelessWidget {
   final IconData icon;
   final TextInputType? keyboardType;
   final bool obscureText;
-  final String? errorText;
+  final String? Function(String?)? validator;
+  final void Function(String?)? onSaved;
   final Widget? suffixIcon;
   final Function(String)? onChanged;
+  final TextInputAction textInputAction;
+  final void Function(String)? onFieldSubmitted;
+  final String? errorText;
 
   const CustomTextField({
     super.key,
@@ -22,32 +26,42 @@ class CustomTextField extends StatelessWidget {
     required this.icon,
     this.keyboardType,
     this.obscureText = false,
-    this.errorText,
+    this.validator,
+    this.onSaved,
     this.suffixIcon,
     this.onChanged,
+    this.textInputAction = TextInputAction.next,
+    this.onFieldSubmitted,
+    this.errorText,
   });
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
       obscureText: obscureText,
       onChanged: onChanged,
+      validator: validator,
+      onSaved: onSaved,
+      textInputAction: textInputAction,
+      onFieldSubmitted: onFieldSubmitted,
       style: GoogleFonts.cairo(
         fontSize: ResponsiveHelper.fontSize(16),
         color: AppColors.primary,
       ),
       decoration: InputDecoration(
+        errorText: errorText,
         labelText: label,
         hintText: hint,
-        errorText: errorText,
         labelStyle: GoogleFonts.tajawal(
           fontSize: ResponsiveHelper.fontSize(14),
+          // ignore: deprecated_member_use
           color: AppColors.primary.withOpacity(0.7),
         ),
         hintStyle: GoogleFonts.tajawal(
           fontSize: ResponsiveHelper.fontSize(14),
+          // ignore: deprecated_member_use
           color: AppColors.primary.withOpacity(0.4),
         ),
         prefixIcon: Icon(
@@ -69,6 +83,10 @@ class CustomTextField extends StatelessWidget {
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(ResponsiveHelper.radius(12)),
           borderSide: const BorderSide(color: Colors.red, width: 1),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(ResponsiveHelper.radius(12)),
+          borderSide: const BorderSide(color: Colors.red, width: 1.5),
         ),
       ),
     );

@@ -7,6 +7,7 @@ import 'package:aqar_hub_gp/core/utils/responsive_helper.dart';
 import 'package:aqar_hub_gp/core/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
 import '../widgets/custom_text_field.dart';
@@ -130,7 +131,7 @@ class _SignUpViewState extends State<SignUpView> {
           child: SingleChildScrollView(
             padding: EdgeInsets.all(ResponsiveHelper.width(24)),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(height: ResponsiveHelper.height(20)),
                 const AuthHeader(
@@ -207,22 +208,25 @@ class _SignUpViewState extends State<SignUpView> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          AuthStrings.alreadyHaveAccount,
-          style: TextStyle(
-            color: AppColors.primary.withOpacity(0.7),
-            fontSize: ResponsiveHelper.fontSize(14),
-          ),
-        ),
         TextButton(
           onPressed: () => NavigationService.goBack(context),
           child: Text(
             AuthStrings.loginButton,
             style: TextStyle(
               color: AppColors.primary,
+              fontFamily: GoogleFonts.cairo().fontFamily,
               fontWeight: FontWeight.bold,
-              fontSize: ResponsiveHelper.fontSize(14),
+              fontSize: ResponsiveHelper.fontSize(12),
             ),
+          ),
+        ),
+        Text(
+          AuthStrings.alreadyHaveAccount,
+          style: TextStyle(
+            fontFamily: GoogleFonts.cairo().fontFamily,
+            // ignore: deprecated_member_use
+            color: AppColors.primary.withOpacity(0.7),
+            fontSize: ResponsiveHelper.fontSize(14),
           ),
         ),
       ],

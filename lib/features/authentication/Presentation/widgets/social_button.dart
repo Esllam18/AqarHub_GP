@@ -41,6 +41,18 @@ class SocialButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Flexible(
+              child: Text(
+                text,
+                style: GoogleFonts.cairo(
+                  fontSize: ResponsiveHelper.fontSize(16),
+                  fontWeight: FontWeight.w700,
+                  color: textColor ?? AppColors.white,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            SizedBox(width: ResponsiveHelper.width(12)),
             if (imagePath != null)
               imagePath!.startsWith('http')
                   ? Image.network(
@@ -59,18 +71,6 @@ class SocialButton extends StatelessWidget {
                 size: ResponsiveHelper.width(24),
                 color: textColor ?? AppColors.white,
               ),
-            SizedBox(width: ResponsiveHelper.width(12)),
-            Flexible(
-              child: Text(
-                text,
-                style: GoogleFonts.cairo(
-                  fontSize: ResponsiveHelper.fontSize(16),
-                  fontWeight: FontWeight.w700,
-                  color: textColor ?? AppColors.white,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
           ],
         ),
       ),

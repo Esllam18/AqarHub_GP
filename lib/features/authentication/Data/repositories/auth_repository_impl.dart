@@ -138,6 +138,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String uid,
     String? firstName,
     String? lastName,
+    String? phoneNumber,
     String? city,
   }) async {
     try {
@@ -147,6 +148,7 @@ class AuthRepositoryImpl implements AuthRepository {
       final updatedUser = userData.copyWith(
         firstName: firstName,
         lastName: lastName,
+        phoneNumber: phoneNumber,
         city: city,
         isProfileComplete: true,
       );

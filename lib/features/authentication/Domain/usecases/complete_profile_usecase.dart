@@ -10,13 +10,14 @@ class CompleteProfileUseCase {
     required String uid,
     String? firstName,
     String? lastName,
-    String? email,
+    String? phoneNumber,
     String? city,
   }) {
     return repository.completeProfile(
       uid: uid,
       firstName: firstName,
       lastName: lastName,
+      phoneNumber: phoneNumber,
       city: city,
     );
   }

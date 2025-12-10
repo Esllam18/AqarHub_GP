@@ -8,4 +8,8 @@ class ValidationStrings {
   static const String firstNameRequired = 'الاسم الأول مطلوب';
   static const String lastNameRequired = 'اسم العائلة مطلوب';
   static const String cityRequired = 'المدينة مطلوبة';
+  static const String phoneRequired = 'رقم الهاتف مطلوب';
+  static const String phoneInvalid =
+      'رقم الهاتف غير صحيح (يجب أن يبدأ بـ 01 ويتكون من 11 رقم)';
+  static const String phoneLabel = 'رقم الهاتف';
 }

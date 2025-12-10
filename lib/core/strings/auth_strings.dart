@@ -54,4 +54,5 @@ class AuthStrings {
   // Common
   static const String skip = 'تخطي';
   static const String loading = 'جاري التحميل...';
+  static const String phoneLabel = 'رقم الهاتف';
 }

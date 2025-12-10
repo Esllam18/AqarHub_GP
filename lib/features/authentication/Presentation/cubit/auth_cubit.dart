@@ -1,5 +1,5 @@
-import 'package:aqar_hub_gp/features/authentication/domain/entities/user_entity.dart';
 import 'package:aqar_hub_gp/features/authentication/domain/usecases/complete_profile_usecase.dart';
+import 'package:aqar_hub_gp/features/authentication/domain/entities/user_entity.dart';
 import 'package:aqar_hub_gp/features/authentication/domain/usecases/send_password_reset_usecase.dart';
 import 'package:aqar_hub_gp/features/authentication/domain/usecases/sign_in_with_email_usecase.dart';
 import 'package:aqar_hub_gp/features/authentication/domain/usecases/sign_in_with_google_usecase.dart';
@@ -116,9 +116,10 @@ class AuthCubit extends Cubit<AuthState> {
     required String uid,
     String? firstName,
     String? lastName,
+    String? phoneNumber,
     String? city,
   }) async {
-    print('🟢 completeProfile called with uid: $uid');
+    print('🟢 completeProfile called for uid: $uid');
 
     // Save the current user BEFORE changing state
     UserEntity? currentUser;
@@ -130,7 +131,7 @@ class AuthCubit extends Cubit<AuthState> {
     }
 
     if (currentUser == null) {
-      print('❌ No user found');
+      print('❌ No user found in state');
       emit(AuthError('لم يتم العثور على بيانات المستخدم'));
       return;
     }
@@ -143,16 +144,17 @@ class AuthCubit extends Cubit<AuthState> {
       uid: uid,
       firstName: firstName,
       lastName: lastName,
+      phoneNumber: phoneNumber,
       city: city,
     );
 
     result.fold(
       (error) {
-        print('❌ completeProfileUseCase error: $error');
+        print('❌ completeProfile failed: $error');
         emit(AuthError(error));
       },
       (_) {
-        print('✅ completeProfileUseCase success');
+        print('✅ Profile completed successfully');
         print('🟢 Emitting AuthSuccess');
         emit(AuthSuccess(currentUser!));
       },

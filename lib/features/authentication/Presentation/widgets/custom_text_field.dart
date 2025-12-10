@@ -1,6 +1,7 @@
 import 'package:aqar_hub_gp/core/consts/app_colors.dart';
 import 'package:aqar_hub_gp/core/utils/responsive_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class CustomTextField extends StatelessWidget {
@@ -17,6 +18,8 @@ class CustomTextField extends StatelessWidget {
   final TextInputAction textInputAction;
   final void Function(String)? onFieldSubmitted;
   final String? errorText;
+  final TextDirection? textDirection;
+  final List<TextInputFormatter>? inputFormatters;
 
   const CustomTextField({
     super.key,
@@ -33,11 +36,15 @@ class CustomTextField extends StatelessWidget {
     this.textInputAction = TextInputAction.next,
     this.onFieldSubmitted,
     this.errorText,
+    this.textDirection,
+    this.inputFormatters,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      textDirection: textDirection, // Add this
+      inputFormatters: inputFormatters,
       controller: controller,
       keyboardType: keyboardType,
       obscureText: obscureText,

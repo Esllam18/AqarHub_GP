@@ -18,8 +18,10 @@ abstract class AuthRepository {
     required String uid,
     String? firstName,
     String? lastName,
+    String? phoneNumber,
     String? city,
   });
+
   Future<Either<String, UserEntity?>> getCurrentUser();
   Future<Either<String, void>> signOut();
   Stream<UserEntity?> authStateChanges();

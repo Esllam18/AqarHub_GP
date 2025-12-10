@@ -1,5 +1,4 @@
 import 'package:aqar_hub_gp/core/consts/app_colors.dart';
-import 'package:aqar_hub_gp/core/router/route_names.dart';
 import 'package:aqar_hub_gp/core/services/navigation_service.dart';
 import 'package:aqar_hub_gp/core/strings/auth_strings.dart';
 import 'package:aqar_hub_gp/core/strings/validation_strings.dart';
@@ -8,11 +7,13 @@ import 'package:aqar_hub_gp/core/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/auth_header.dart';
 import '../widgets/loading_button.dart';
+import '../views/role_selection_view.dart';
 
 class SignUpView extends StatefulWidget {
   const SignUpView({super.key});
@@ -113,9 +114,22 @@ class _SignUpViewState extends State<SignUpView> {
   }
 
   void _handleStateChange(BuildContext context, AuthState state) {
+    print('🔵 Sign Up - Auth state changed: ${state.runtimeType}');
+
     if (state is AuthNeedsRoleSelection) {
-      NavigationService.navigateToAndReplace(context, RouteNames.roleSelection);
+      print('🔵 Sign Up - Navigating to role selection');
+      // Capture the cubit BEFORE navigating
+      final authCubit = context.read<AuthCubit>();
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => BlocProvider.value(
+            value: authCubit,
+            child: const RoleSelectionView(),
+          ),
+        ),
+      );
     } else if (state is AuthError) {
+      print('❌ Sign Up - Auth error: ${state.message}');
       CustomSnackBar.show(
         context,
         message: state.message,

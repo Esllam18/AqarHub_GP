@@ -6,9 +6,9 @@ import 'package:aqar_hub_gp/core/strings/validation_strings.dart';
 import 'package:aqar_hub_gp/core/utils/responsive_helper.dart';
 import 'package:aqar_hub_gp/core/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
 import '../widgets/custom_text_field.dart';
@@ -25,51 +25,39 @@ class CompleteProfileView extends StatefulWidget {
 class _CompleteProfileViewState extends State<CompleteProfileView> {
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _cityController = TextEditingController();
+
   String? _firstNameError;
   String? _lastNameError;
+  String? _phoneError;
   String? _cityError;
 
   @override
   void dispose() {
     _firstNameController.dispose();
     _lastNameController.dispose();
+    _phoneController.dispose();
     _cityController.dispose();
     super.dispose();
   }
 
   void _finish() {
-    print('🟢 Finish button pressed');
-    if (!_validate()) {
-      print('❌ Validation failed');
-      return;
-    }
+    if (!_validate()) return;
 
-    final authState = context.read<AuthCubit>().state;
-    print('🟢 Current state type: ${authState.runtimeType}');
-
+    final state = context.read<AuthCubit>().state;
     String? uid;
-    if (authState is AuthNeedsProfileCompletion) {
-      uid = authState.user.uid;
-      print('🟢 Found user UID: $uid');
-    } else {
-      print(
-        '❌ State is NOT AuthNeedsProfileCompletion! Current state: $authState',
-      );
-      CustomSnackBar.show(
-        context,
-        message: 'خطأ: حالة المصادقة غير صحيحة',
-        type: SnackBarType.error,
-      );
-      return;
+
+    if (state is AuthNeedsProfileCompletion) {
+      uid = state.user.uid;
     }
 
     if (uid != null) {
-      print('🟢 Calling completeProfile with uid: $uid');
       context.read<AuthCubit>().completeProfile(
         uid: uid,
         firstName: _firstNameController.text.trim(),
         lastName: _lastNameController.text.trim(),
+        phoneNumber: _phoneController.text.trim(),
         city: _cityController.text.trim(),
       );
     }
@@ -83,13 +71,24 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
       _lastNameError = _lastNameController.text.trim().isEmpty
           ? ValidationStrings.lastNameRequired
           : null;
+      _phoneError = _validatePhone(_phoneController.text.trim());
       _cityError = _cityController.text.trim().isEmpty
           ? ValidationStrings.cityRequired
           : null;
     });
     return _firstNameError == null &&
         _lastNameError == null &&
+        _phoneError == null &&
         _cityError == null;
+  }
+
+  String? _validatePhone(String phone) {
+    if (phone.isEmpty) return ValidationStrings.phoneRequired;
+    // Egyptian phone validation (11 digits starting with 01)
+    if (!RegExp(r'^01[0-2,5]{1}[0-9]{8}$').hasMatch(phone)) {
+      return ValidationStrings.phoneInvalid;
+    }
+    return null;
   }
 
   @override
@@ -131,13 +130,9 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
   }
 
   void _handleStateChange(BuildContext context, AuthState state) {
-    print('🟢 Complete profile - State changed: ${state.runtimeType}');
-
     if (state is AuthSuccess) {
-      print('✅ Auth success - navigating to home');
       NavigationService.navigateAndClear(context, RouteNames.home);
     } else if (state is AuthError) {
-      print('❌ Auth error: ${state.message}');
       CustomSnackBar.show(
         context,
         message: state.message,
@@ -164,22 +159,41 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
                 CustomTextField(
                   controller: _firstNameController,
                   label: AuthStrings.firstNameLabel,
+                  hint: 'أحمد',
                   icon: Icons.person_outline,
                   errorText: _firstNameError,
+                  textDirection: TextDirection.rtl, // Support Arabic
                 ),
                 SizedBox(height: ResponsiveHelper.height(16)),
                 CustomTextField(
                   controller: _lastNameController,
                   label: AuthStrings.lastNameLabel,
+                  hint: 'محمد',
                   icon: Icons.person_outline,
                   errorText: _lastNameError,
+                  textDirection: TextDirection.rtl, // Support Arabic
+                ),
+                SizedBox(height: ResponsiveHelper.height(16)),
+                CustomTextField(
+                  controller: _phoneController,
+                  label: AuthStrings.phoneLabel,
+                  hint: '01012345678',
+                  icon: Icons.phone_outlined,
+                  keyboardType: TextInputType.phone,
+                  errorText: _phoneError,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(11),
+                  ],
                 ),
                 SizedBox(height: ResponsiveHelper.height(16)),
                 CustomTextField(
                   controller: _cityController,
                   label: AuthStrings.cityLabel,
+                  hint: 'القاهرة',
                   icon: Icons.location_city_outlined,
                   errorText: _cityError,
+                  textDirection: TextDirection.rtl, // Support Arabic
                 ),
                 SizedBox(height: ResponsiveHelper.height(40)),
                 LoadingButton(

@@ -49,34 +49,48 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<UserCredential> signInWithGoogle() async {
-    // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+    try {
+      print('🟢 Starting Google Sign-In');
 
-    // If user cancels the sign-in
-    if (googleUser == null) {
-      throw Exception('تم إلغاء تسجيل الدخول');
+      // Trigger the authentication flow
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+      // If user cancels the sign-in
+      if (googleUser == null) {
+        print('❌ User cancelled Google Sign-In');
+        throw Exception('تم إلغاء تسجيل الدخول');
+      }
+
+      print('✅ Google User: ${googleUser.email}');
+
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      // Check if tokens are available
+      final String? accessToken = googleAuth.accessToken;
+      final String? idToken = googleAuth.idToken;
+
+      print('🟢 Access Token: ${accessToken != null ? "Available" : "NULL"}');
+      print('🟢 ID Token: ${idToken != null ? "Available" : "NULL"}');
+
+      if (accessToken == null || idToken == null) {
+        throw Exception('فشل الحصول على بيانات المصادقة من Google');
+      }
+
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(
+        accessToken: accessToken,
+        idToken: idToken,
+      );
+
+      print('🟢 Signing in to Firebase with Google credential');
+      // Sign in to Firebase with the Google credential
+      return await firebaseAuth.signInWithCredential(credential);
+    } catch (e) {
+      print('❌ Google Sign-In Error: $e');
+      rethrow;
     }
-
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
-
-    // Check if tokens are available
-    final String? accessToken = googleAuth.accessToken;
-    final String? idToken = googleAuth.idToken;
-
-    if (accessToken == null || idToken == null) {
-      throw Exception('فشل الحصول على بيانات المصادقة من Google');
-    }
-
-    // Create a new credential
-    final credential = GoogleAuthProvider.credential(
-      accessToken: accessToken,
-      idToken: idToken,
-    );
-
-    // Sign in to Firebase with the Google credential
-    return await firebaseAuth.signInWithCredential(credential);
   }
 
   @override

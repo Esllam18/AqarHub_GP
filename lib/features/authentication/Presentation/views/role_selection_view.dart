@@ -1,7 +1,5 @@
 import 'package:aqar_hub_gp/core/consts/app_colors.dart';
 import 'package:aqar_hub_gp/core/enums/user_role.dart';
-import 'package:aqar_hub_gp/core/router/route_names.dart';
-import 'package:aqar_hub_gp/core/services/navigation_service.dart';
 import 'package:aqar_hub_gp/core/strings/auth_strings.dart';
 import 'package:aqar_hub_gp/core/utils/responsive_helper.dart';
 import 'package:aqar_hub_gp/core/widgets/custom_snackbar.dart';
@@ -13,6 +11,7 @@ import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
 import '../widgets/role_card.dart';
 import '../widgets/social_button.dart';
+import '../views/complete_profile_view.dart';
 
 class RoleSelectionView extends StatefulWidget {
   const RoleSelectionView({super.key});
@@ -25,9 +24,22 @@ class _RoleSelectionViewState extends State<RoleSelectionView> {
   UserRole _selectedRole = UserRole.user;
 
   void _continue() {
-    final state = context.read<AuthCubit>().state;
-    if (state is AuthNeedsRoleSelection) {
-      context.read<AuthCubit>().updateRole(state.user.uid, _selectedRole);
+    print('🔵 Continue button pressed on role selection');
+    final authState = context.read<AuthCubit>().state;
+    print('🔵 Current state type: ${authState.runtimeType}');
+
+    if (authState is AuthNeedsRoleSelection) {
+      print('🔵 State is AuthNeedsRoleSelection');
+      print('🔵 User UID: ${authState.user.uid}');
+      print('🔵 Selected role: $_selectedRole');
+      context.read<AuthCubit>().updateRole(authState.user.uid, _selectedRole);
+    } else {
+      print('❌ State is NOT AuthNeedsRoleSelection! Current state: $authState');
+      CustomSnackBar.show(
+        context,
+        message: 'خطأ: حالة المصادقة غير صحيحة',
+        type: SnackBarType.error,
+      );
     }
   }
 
@@ -37,9 +49,22 @@ class _RoleSelectionViewState extends State<RoleSelectionView> {
       backgroundColor: AppColors.white,
       body: BlocListener<AuthCubit, AuthState>(
         listener: (context, state) {
+          print('🔵 Role selection - State changed: ${state.runtimeType}');
+
           if (state is AuthNeedsProfileCompletion) {
-            NavigationService.navigateTo(context, RouteNames.completeProfile);
+            print('🔵 Navigating to complete profile');
+            // Capture the cubit before navigating
+            final authCubit = context.read<AuthCubit>();
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => BlocProvider.value(
+                  value: authCubit,
+                  child: const CompleteProfileView(),
+                ),
+              ),
+            );
           } else if (state is AuthError) {
+            print('❌ Auth error: ${state.message}');
             CustomSnackBar.show(
               context,
               message: state.message,
@@ -67,7 +92,6 @@ class _RoleSelectionViewState extends State<RoleSelectionView> {
                   AuthStrings.roleSubtitle,
                   style: GoogleFonts.tajawal(
                     fontSize: ResponsiveHelper.fontSize(16),
-                    // ignore: deprecated_member_use
                     color: AppColors.primary.withOpacity(0.7),
                   ),
                 ),

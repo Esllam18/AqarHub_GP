@@ -14,6 +14,8 @@ import '../cubit/auth_state.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/auth_header.dart';
 import '../widgets/loading_button.dart';
+import '../views/role_selection_view.dart';
+import '../views/complete_profile_view.dart';
 
 class EmailAuthView extends StatefulWidget {
   const EmailAuthView({super.key});
@@ -91,16 +93,37 @@ class _EmailAuthViewState extends State<EmailAuthView> {
   }
 
   void _handleStateChange(BuildContext context, AuthState state) {
+    print('🔵 Auth state changed: ${state.runtimeType}');
+
     if (state is AuthNeedsRoleSelection) {
-      NavigationService.navigateToAndReplace(context, RouteNames.roleSelection);
+      print('🔵 Navigating to role selection');
+      // Capture the cubit BEFORE navigating
+      final authCubit = context.read<AuthCubit>();
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => BlocProvider.value(
+            value: authCubit,
+            child: const RoleSelectionView(),
+          ),
+        ),
+      );
     } else if (state is AuthNeedsProfileCompletion) {
-      NavigationService.navigateToAndReplace(
-        context,
-        RouteNames.completeProfile,
+      print('🔵 Navigating to complete profile');
+      // Capture the cubit BEFORE navigating
+      final authCubit = context.read<AuthCubit>();
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => BlocProvider.value(
+            value: authCubit,
+            child: const CompleteProfileView(),
+          ),
+        ),
       );
     } else if (state is AuthSuccess) {
+      print('🔵 Navigating to home - user is fully set up');
       NavigationService.navigateToAndReplace(context, RouteNames.home);
     } else if (state is AuthError) {
+      print('❌ Auth error: ${state.message}');
       CustomSnackBar.show(
         context,
         message: state.message,

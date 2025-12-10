@@ -68,14 +68,40 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> updateRole(String uid, UserRole role) async {
+    print('🟢 updateRole called with uid: $uid, role: $role');
+
+    // Save the current user BEFORE changing state
+    UserEntity? currentUser;
+    if (state is AuthNeedsRoleSelection) {
+      currentUser = (state as AuthNeedsRoleSelection).user;
+      print('🟢 Current user found: ${currentUser.email}');
+    } else {
+      print('❌ State is not AuthNeedsRoleSelection: ${state.runtimeType}');
+    }
+
+    if (currentUser == null) {
+      print('❌ No user found');
+      emit(AuthError('لم يتم العثور على بيانات المستخدم'));
+      return;
+    }
+
+    print('🟢 Emitting AuthLoading');
     emit(AuthLoading());
+
+    print('🟢 Calling updateUserRoleUseCase');
     final result = await updateUserRoleUseCase(uid, role);
-    result.fold((error) => emit(AuthError(error)), (_) {
-      if (state is AuthNeedsRoleSelection) {
-        final user = (state as AuthNeedsRoleSelection).user;
-        emit(AuthNeedsProfileCompletion(user));
-      }
-    });
+
+    result.fold(
+      (error) {
+        print('❌ updateUserRoleUseCase error: $error');
+        emit(AuthError(error));
+      },
+      (_) {
+        print('✅ updateUserRoleUseCase success');
+        print('🟢 Emitting AuthNeedsProfileCompletion');
+        emit(AuthNeedsProfileCompletion(currentUser!));
+      },
+    );
   }
 
   // sign out method
@@ -92,19 +118,45 @@ class AuthCubit extends Cubit<AuthState> {
     String? lastName,
     String? city,
   }) async {
+    print('🟢 completeProfile called with uid: $uid');
+
+    // Save the current user BEFORE changing state
+    UserEntity? currentUser;
+    if (state is AuthNeedsProfileCompletion) {
+      currentUser = (state as AuthNeedsProfileCompletion).user;
+      print('🟢 Current user found: ${currentUser.email}');
+    } else {
+      print('❌ State is not AuthNeedsProfileCompletion: ${state.runtimeType}');
+    }
+
+    if (currentUser == null) {
+      print('❌ No user found');
+      emit(AuthError('لم يتم العثور على بيانات المستخدم'));
+      return;
+    }
+
+    print('🟢 Emitting AuthLoading');
     emit(AuthLoading());
+
+    print('🟢 Calling completeProfileUseCase');
     final result = await completeProfileUseCase(
       uid: uid,
       firstName: firstName,
       lastName: lastName,
       city: city,
     );
-    result.fold((error) => emit(AuthError(error)), (_) {
-      if (state is AuthNeedsProfileCompletion) {
-        final user = (state as AuthNeedsProfileCompletion).user;
-        emit(AuthSuccess(user));
-      }
-    });
+
+    result.fold(
+      (error) {
+        print('❌ completeProfileUseCase error: $error');
+        emit(AuthError(error));
+      },
+      (_) {
+        print('✅ completeProfileUseCase success');
+        print('🟢 Emitting AuthSuccess');
+        emit(AuthSuccess(currentUser!));
+      },
+    );
   }
 
   void _handleAuthSuccess(UserEntity user) {

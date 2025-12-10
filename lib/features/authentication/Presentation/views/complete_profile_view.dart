@@ -7,6 +7,7 @@ import 'package:aqar_hub_gp/core/utils/responsive_helper.dart';
 import 'package:aqar_hub_gp/core/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../cubit/auth_cubit.dart';
 import '../cubit/auth_state.dart';
@@ -38,16 +39,33 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
   }
 
   void _finish() {
-    if (!_validate()) return;
+    print('🟢 Finish button pressed');
+    if (!_validate()) {
+      print('❌ Validation failed');
+      return;
+    }
 
-    final state = context.read<AuthCubit>().state;
+    final authState = context.read<AuthCubit>().state;
+    print('🟢 Current state type: ${authState.runtimeType}');
+
     String? uid;
-
-    if (state is AuthNeedsProfileCompletion) {
-      uid = state.user.uid;
+    if (authState is AuthNeedsProfileCompletion) {
+      uid = authState.user.uid;
+      print('🟢 Found user UID: $uid');
+    } else {
+      print(
+        '❌ State is NOT AuthNeedsProfileCompletion! Current state: $authState',
+      );
+      CustomSnackBar.show(
+        context,
+        message: 'خطأ: حالة المصادقة غير صحيحة',
+        type: SnackBarType.error,
+      );
+      return;
     }
 
     if (uid != null) {
+      print('🟢 Calling completeProfile with uid: $uid');
       context.read<AuthCubit>().completeProfile(
         uid: uid,
         firstName: _firstNameController.text.trim(),
@@ -97,6 +115,7 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
           child: Text(
             AuthStrings.skip,
             style: TextStyle(
+              fontFamily: GoogleFonts.cairo().fontFamily,
               fontSize: ResponsiveHelper.fontSize(16),
               fontWeight: FontWeight.w600,
               color: AppColors.primary,
@@ -104,13 +123,21 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
           ),
         ),
       ],
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_ios, color: AppColors.primary),
+        onPressed: () => NavigationService.goBack(context),
+      ),
     );
   }
 
   void _handleStateChange(BuildContext context, AuthState state) {
+    print('🟢 Complete profile - State changed: ${state.runtimeType}');
+
     if (state is AuthSuccess) {
+      print('✅ Auth success - navigating to home');
       NavigationService.navigateAndClear(context, RouteNames.home);
     } else if (state is AuthError) {
+      print('❌ Auth error: ${state.message}');
       CustomSnackBar.show(
         context,
         message: state.message,
@@ -126,7 +153,7 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
           child: SingleChildScrollView(
             padding: EdgeInsets.all(ResponsiveHelper.width(24)),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(height: ResponsiveHelper.height(20)),
                 const AuthHeader(

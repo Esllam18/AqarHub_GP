@@ -1,6 +1,11 @@
-import 'package:aqar_hub_gp/features/home/views/home_view.dart';
+import 'package:aqar_hub_gp/features/apartment/presentation/views/apartment_details_view.dart';
+import 'package:aqar_hub_gp/features/chat/models/chat_model.dart';
+import 'package:aqar_hub_gp/features/chat/presentation/views/chat_conversation_view.dart';
+import 'package:aqar_hub_gp/features/home_seeker/presentation/views/smart_search_view.dart';
+import 'package:aqar_hub_gp/features/main_layout/presentation/views/main_layout_view.dart';
 import 'package:aqar_hub_gp/features/onboarding/presentation/cubit/onboarding_cubit.dart';
 import 'package:aqar_hub_gp/features/onboarding/presentation/views/onboarding_view.dart';
+import 'package:aqar_hub_gp/features/owner/presentation/views/owner_home_view.dart';
 import 'package:aqar_hub_gp/features/splash/presentation/cubit/splash_cubit.dart';
 import 'package:aqar_hub_gp/features/splash/presentation/views/splash_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,7 +27,7 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: RouteNames.splash,
       name: RouteNames.splash,
-      builder: (context, state) => BlocProvider<SplashCubit>(
+      builder: (context, state) => BlocProvider(
         create: (context) => SplashCubit(),
         child: const SplashView(),
       ),
@@ -32,7 +37,7 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: RouteNames.onboarding,
       name: RouteNames.onboarding,
-      builder: (context, state) => BlocProvider<OnboardingCubit>(
+      builder: (context, state) => BlocProvider(
         create: (context) => OnboardingCubit(),
         child: const OnboardingView(),
       ),
@@ -42,7 +47,7 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: RouteNames.welcome,
       name: RouteNames.welcome,
-      builder: (context, state) => BlocProvider<AuthCubit>(
+      builder: (context, state) => BlocProvider(
         create: (context) => getIt<AuthCubit>(),
         child: const WelcomeView(),
       ),
@@ -52,7 +57,7 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: RouteNames.login,
       name: RouteNames.login,
-      builder: (context, state) => BlocProvider<AuthCubit>(
+      builder: (context, state) => BlocProvider(
         create: (context) => getIt<AuthCubit>(),
         child: const EmailAuthView(),
       ),
@@ -62,7 +67,7 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: RouteNames.signUp,
       name: RouteNames.signUp,
-      builder: (context, state) => BlocProvider<AuthCubit>(
+      builder: (context, state) => BlocProvider(
         create: (context) => getIt<AuthCubit>(),
         child: const SignUpView(),
       ),
@@ -72,7 +77,7 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: RouteNames.forgotPassword,
       name: RouteNames.forgotPassword,
-      builder: (context, state) => BlocProvider<AuthCubit>(
+      builder: (context, state) => BlocProvider(
         create: (context) => getIt<AuthCubit>(),
         child: const ForgotPasswordView(),
       ),
@@ -82,7 +87,7 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: RouteNames.roleSelection,
       name: RouteNames.roleSelection,
-      builder: (context, state) => BlocProvider<AuthCubit>(
+      builder: (context, state) => BlocProvider(
         create: (context) => getIt<AuthCubit>(),
         child: const RoleSelectionView(),
       ),
@@ -92,25 +97,57 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: RouteNames.completeProfile,
       name: RouteNames.completeProfile,
-      builder: (context, state) => BlocProvider<AuthCubit>(
+      builder: (context, state) => BlocProvider(
         create: (context) => getIt<AuthCubit>(),
         child: const CompleteProfileView(),
       ),
     ),
 
-    // Home Screen
+    // Main Layout (NEW)
     GoRoute(
-      path: RouteNames.home,
-      name: RouteNames.home,
+      path: RouteNames.mainLayout,
+      name: RouteNames.mainLayout,
       builder: (context, state) {
-        final user = state.extra as dynamic;
-        return BlocProvider<AuthCubit>(
-          create: (context) => getIt<AuthCubit>(),
-          child: HomeView(user: user),
-        );
+        final extra = state.extra as Map<String, dynamic>?;
+        final isOwner = extra?['isOwner'] as bool? ?? false;
+        final user = extra?['user'];
+        return MainLayoutView(isOwner: isOwner, user: user);
       },
     ),
 
-    // Forgot Password Screen
+    // Home Screen (Legacy - Keep for backward compatibility)
+
+    // Owner Home (Legacy - Keep for backward compatibility)
+    GoRoute(
+      path: RouteNames.ownerHome,
+      name: RouteNames.ownerHome,
+      builder: (context, state) => OwnerHomeView(),
+    ),
+
+    // Smart Search (NEW)
+    GoRoute(
+      path: RouteNames.smartSearch,
+      name: RouteNames.smartSearch,
+      builder: (context, state) => const SmartSearchView(),
+    ),
+
+    // Apartment Details (NEW)
+    GoRoute(
+      path: RouteNames.apartmentDetails,
+      name: RouteNames.apartmentDetails,
+      builder: (context, state) {
+        // final apartmentId = state.extra as String?;
+        return const ApartmentDetailsView();
+      },
+    ),
+
+    GoRoute(
+      path: '/chat/:chatId',
+      name: 'chatConversation',
+      builder: (context, state) {
+        final chat = state.extra as ChatModel;
+        return ChatConversationView(chat: chat);
+      },
+    ),
   ],
 );

@@ -29,4 +29,15 @@ class RouteNames {
   static const String applyToJob = '/apply-to-job';
   static const String successApplied = '/success-applied';
   static const String cart = '/cart';
+  static const String ownerHome = '/owner-home';
+  static const String addApartment = '/add-apartment';
+  static const String apartmentDetails = '/apartment-details';
+  // Main Layout
+  static const String mainLayout = '/main-layout';
+
+  // User Routes
+  static const String userHome = '/user-home';
+  static const String smartSearch = '/smart-search';
+  static const String chats = '/chats';
+  static const String chatConversation = '/chat-conversation';
 }

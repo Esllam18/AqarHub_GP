@@ -131,7 +131,7 @@ class _CompleteProfileViewState extends State<CompleteProfileView> {
 
   void _handleStateChange(BuildContext context, AuthState state) {
     if (state is AuthSuccess) {
-      NavigationService.navigateAndClear(context, RouteNames.home);
+      NavigationService.navigateAndClear(context, RouteNames.ownerHome);
     } else if (state is AuthError) {
       CustomSnackBar.show(
         context,

@@ -5,6 +5,7 @@ import 'package:aqar_hub_gp/features/splash/presentation/manager/splash_animatio
 import 'package:aqar_hub_gp/features/splash/presentation/widgets/splash_background_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../cubit/splash_cubit.dart';
 import '../cubit/splash_state.dart';
 import '../widgets/splash_content_widget.dart';
@@ -27,36 +28,52 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
 
   /// Initialize and start all animations
   void _initializeAndStartAnimations() {
-    // Create animation config
     const config = SplashAnimationConfig();
-
-    // Initialize animation manager
     _animationManager = SplashAnimationManager(config: config);
     _animationManager.initialize(this);
-
-    // Start animation sequence
     _startAnimationSequence();
   }
 
   /// Start the animation sequence
   void _startAnimationSequence() {
-    // Emit splash started state
     context.read<SplashCubit>().startSplash();
-
-    // Start animations
-    _animationManager.startSequence().then((_) {
-      // Complete splash
-      // ignore: use_build_context_synchronously
+    _animationManager.startSequence().then((_) async {
       context.read<SplashCubit>().completeSplash();
-
-      // Navigate to next screen
-      _handleNavigation();
+      await _handleNavigation();
     });
   }
 
-  ///  navigation to next screen
-  void _handleNavigation() {
-    NavigationService.navigateToAndReplace(context, RouteNames.onboarding);
+  /// Check user authentication status
+  Future<bool> _checkAuthentication() async {
+    try {
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      final prefs = await SharedPreferences.getInstance();
+      final isAuthenticated = prefs.getBool('isAuthenticated') ?? false;
+
+      // DEBUG: Print authentication status
+      debugPrint('🔍 Checking authentication status: $isAuthenticated');
+
+      return isAuthenticated;
+    } catch (e) {
+      debugPrint('❌ Error checking authentication: $e');
+      return false;
+    }
+  }
+
+  /// navigation to next screen based on authentication
+  Future<void> _handleNavigation() async {
+    final isAuthenticated = await _checkAuthentication();
+
+    if (!mounted) return;
+
+    if (isAuthenticated) {
+      debugPrint('✅ User authenticated - Navigating to HOME');
+      NavigationService.navigateToAndReplace(context, RouteNames.mainLayout);
+    } else {
+      debugPrint('❌ User NOT authenticated - Navigating to ONBOARDING');
+      NavigationService.navigateToAndReplace(context, RouteNames.onboarding);
+    }
   }
 
   @override
@@ -72,12 +89,9 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
         builder: (context, state) {
           return Stack(
             children: [
-              // Animated Background
               SplashBackgroundWidget(
                 backgroundAnimation: _animationManager.backgroundAnimation,
               ),
-
-              // Animated Content (Logo + Text)
               SafeArea(
                 child: Center(
                   child: SplashContentWidget(

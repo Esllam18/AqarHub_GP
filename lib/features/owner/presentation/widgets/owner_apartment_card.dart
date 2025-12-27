@@ -55,10 +55,11 @@ class OwnerApartmentCard extends StatelessWidget {
                         ),
                       ),
                       child: Center(
-                        child: Icon(
-                          Icons.apartment_rounded,
-                          size: ResponsiveHelper.width(45),
-                          color: AppColors.primary.withOpacity(0.4),
+                        child: Image.network(
+                          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTIlDP3W9iDk2oNB1TccLU57WeWgUu5TOd8Ew&s',
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: double.infinity,
                         ),
                       ),
                     ),

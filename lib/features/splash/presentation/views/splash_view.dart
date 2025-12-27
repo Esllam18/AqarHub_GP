@@ -68,7 +68,6 @@ class _SplashViewState extends State<SplashView> with TickerProviderStateMixin {
     if (!mounted) return;
 
     if (isAuthenticated) {
-      debugPrint('✅ User authenticated - Navigating to HOME');
       NavigationService.navigateToAndReplace(context, RouteNames.mainLayout);
     } else {
       debugPrint('❌ User NOT authenticated - Navigating to ONBOARDING');

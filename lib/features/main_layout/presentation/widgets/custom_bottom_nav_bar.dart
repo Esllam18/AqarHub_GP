@@ -84,7 +84,7 @@ class CustomBottomNavBar extends StatelessWidget {
           label: HomeStrings.navDashboard,
           index: 0,
         ),
-        SizedBox(width: ResponsiveHelper.width(60)), // Space for FAB
+        // SizedBox(width: ResponsiveHelper.width(60)), // Space for FAB
         _buildNavItem(
           icon: Icons.chat_bubble_rounded,
           label: HomeStrings.navChats,

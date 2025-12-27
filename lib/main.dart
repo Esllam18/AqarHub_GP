@@ -11,13 +11,10 @@ Future<void> main() async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.setBool('isAuthenticated', true);
 
-  // 1) Initialize Firebase first
   await Firebase.initializeApp();
 
-  // 2) Then initialize GetIt + DI
   await init();
 
-  // 3) Lock orientation
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,

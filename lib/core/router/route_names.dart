@@ -40,4 +40,6 @@ class RouteNames {
   static const String smartSearch = '/smart-search';
   static const String chats = '/chats';
   static const String chatConversation = '/chat-conversation';
+  static const String favoritesView = '/favorites-view';
+  static const String addApartmentSuccess = '/add-apartment-success';
 }

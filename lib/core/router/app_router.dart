@@ -1,3 +1,5 @@
+import 'package:aqar_hub_gp/features/add_apartment/presentation/views/add_apartment_flow_view.dart';
+import 'package:aqar_hub_gp/features/add_apartment/presentation/views/success_view.dart';
 import 'package:aqar_hub_gp/features/apartment/presentation/views/apartment_details_view.dart';
 import 'package:aqar_hub_gp/features/chat/models/chat_model.dart';
 import 'package:aqar_hub_gp/features/chat/presentation/views/chat_conversation_view.dart';
@@ -109,7 +111,7 @@ final GoRouter router = GoRouter(
       name: RouteNames.mainLayout,
       builder: (context, state) {
         final extra = state.extra as Map<String, dynamic>?;
-        final isOwner = extra?['isOwner'] as bool? ?? false;
+        final isOwner = extra?['isOwner'] as bool? ?? true;
         final user = extra?['user'];
         return MainLayoutView(isOwner: isOwner, user: user);
       },
@@ -147,6 +149,19 @@ final GoRouter router = GoRouter(
       builder: (context, state) {
         final chat = state.extra as ChatModel;
         return ChatConversationView(chat: chat);
+      },
+    ),
+    GoRoute(
+      path: '/add-apartment',
+      name: RouteNames.addApartment,
+      builder: (context, state) => const AddApartmentFlowView(),
+    ),
+    GoRoute(
+      path: '/add-apartment-success',
+      name: RouteNames.addApartmentSuccess,
+      builder: (context, state) {
+        final isVerified = state.extra as bool? ?? false;
+        return AddApartmentSuccessView(isVerified: isVerified);
       },
     ),
   ],

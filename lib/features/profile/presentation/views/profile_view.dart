@@ -28,6 +28,8 @@ class ProfileView extends StatelessWidget {
               expandedHeight: ResponsiveHelper.height(200),
               floating: false,
               pinned: true,
+              automaticallyImplyLeading: false,
+
               backgroundColor: AppColors.primary,
               flexibleSpace: FlexibleSpaceBar(
                 background: Container(

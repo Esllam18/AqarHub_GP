@@ -124,7 +124,7 @@ final GoRouter router = GoRouter(
       name: RouteNames.mainLayout,
       builder: (context, state) {
         final extra = state.extra as Map<String, dynamic>?;
-        final isOwner = extra?['isOwner'] as bool? ?? false;
+        final isOwner = extra?['isOwner'] as bool? ?? true;
         final user = extra?['user'];
         return MainLayoutView(isOwner: isOwner, user: user);
       },

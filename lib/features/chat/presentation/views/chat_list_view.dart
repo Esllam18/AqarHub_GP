@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:aqar_hub_gp/core/consts/app_colors.dart';
@@ -107,7 +108,7 @@ class _ChatListViewState extends State<ChatListView> {
           actions: [
             IconButton(
               icon: Icon(
-                Icons.search_rounded,
+                CupertinoIcons.search,
                 color: Colors.black87,
                 size: ResponsiveHelper.width(24),
               ),
@@ -117,7 +118,7 @@ class _ChatListViewState extends State<ChatListView> {
             ),
             IconButton(
               icon: Icon(
-                Icons.more_vert_rounded,
+                CupertinoIcons.ellipsis,
                 color: Colors.black87,
                 size: ResponsiveHelper.width(24),
               ),

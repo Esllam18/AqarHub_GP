@@ -8,6 +8,10 @@ import 'package:aqar_hub_gp/features/main_layout/presentation/views/main_layout_
 import 'package:aqar_hub_gp/features/onboarding/presentation/cubit/onboarding_cubit.dart';
 import 'package:aqar_hub_gp/features/onboarding/presentation/views/onboarding_view.dart';
 import 'package:aqar_hub_gp/features/owner/presentation/views/owner_home_view.dart';
+import 'package:aqar_hub_gp/features/payment/presentation/views/card_payment_view.dart';
+import 'package:aqar_hub_gp/features/payment/presentation/views/payment_method_selection_view.dart';
+import 'package:aqar_hub_gp/features/payment/presentation/views/payment_processing_view.dart';
+import 'package:aqar_hub_gp/features/payment/presentation/views/payment_success_view.dart';
 import 'package:aqar_hub_gp/features/splash/presentation/cubit/splash_cubit.dart';
 import 'package:aqar_hub_gp/features/splash/presentation/views/splash_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -162,6 +166,67 @@ final GoRouter router = GoRouter(
       builder: (context, state) {
         final isVerified = state.extra as bool? ?? false;
         return AddApartmentSuccessView(isVerified: isVerified);
+      },
+    ),
+
+    // Payment Method Selection
+    GoRoute(
+      path: '/payment-method-selection',
+      name: RouteNames.paymentMethodSelection,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        return PaymentMethodSelectionView(
+          apartmentTitle: extra?['apartmentTitle'] ?? 'عقار',
+          amount: extra?['amount'] ?? 200,
+          apartmentId: extra?['apartmentId'] ?? '',
+        );
+      },
+    ),
+
+    // Card Payment
+    GoRoute(
+      path: '/card-payment',
+      name: RouteNames.cardPayment,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        return CardPaymentView(
+          apartmentTitle: extra?['apartmentTitle'] ?? 'عقار',
+          amount: extra?['amount'] ?? 200,
+          apartmentId: extra?['apartmentId'] ?? '',
+        );
+      },
+    ),
+
+    // Payment Processing
+    GoRoute(
+      path: '/payment-processing',
+      name: RouteNames.paymentProcessing,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        return PaymentProcessingView(
+          apartmentTitle: extra?['apartmentTitle'] ?? 'عقار',
+          amount: extra?['amount'] ?? 200,
+          apartmentId: extra?['apartmentId'] ?? '',
+          paymentMethod: extra?['paymentMethod'] ?? 'card',
+          cardNumber: extra?['cardNumber'],
+          cardHolder: extra?['cardHolder'],
+        );
+      },
+    ),
+
+    // Payment Success
+    GoRoute(
+      path: '/payment-success',
+      name: RouteNames.paymentSuccess,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        return PaymentSuccessView(
+          apartmentTitle: extra?['apartmentTitle'] ?? 'عقار',
+          amount: extra?['amount'] ?? 200,
+          apartmentId: extra?['apartmentId'] ?? '',
+          paymentMethod: extra?['paymentMethod'] ?? 'card',
+          transactionId: extra?['transactionId'] ?? 'TXN000000',
+        );
       },
     ),
   ],

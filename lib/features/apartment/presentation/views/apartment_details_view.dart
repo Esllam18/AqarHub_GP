@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:aqar_hub_gp/core/consts/app_colors.dart';
 import 'package:aqar_hub_gp/core/utils/responsive_helper.dart';
+import 'package:aqar_hub_gp/core/router/route_names.dart'; // 🆕 ADD THIS
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../widgets/auto_image_carousel.dart';
@@ -50,7 +51,7 @@ class _ApartmentDetailsViewState extends State<ApartmentDetailsView> {
           children: [
             // Main Content
             CustomScrollView(
-              physics: BouncingScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               slivers: [
                 // Image Carousel
                 SliverToBoxAdapter(child: AutoImageCarousel(images: _images)),
@@ -81,9 +82,7 @@ class _ApartmentDetailsViewState extends State<ApartmentDetailsView> {
                               Text(
                                 'شقة استوديو فاخرة في موقع مميز',
                                 style: GoogleFonts.cairo(
-                                  fontSize: ResponsiveHelper.fontSize(
-                                    17,
-                                  ), // ✅ Reduced
+                                  fontSize: ResponsiveHelper.fontSize(17),
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black87,
                                   height: 1.3,
@@ -149,7 +148,7 @@ class _ApartmentDetailsViewState extends State<ApartmentDetailsView> {
 
                                   SizedBox(width: ResponsiveHelper.width(10)),
 
-                                  // Rating (✅ Moved under verified badge)
+                                  // Rating
                                   Container(
                                     padding: EdgeInsets.symmetric(
                                       horizontal: ResponsiveHelper.width(10),
@@ -209,7 +208,7 @@ class _ApartmentDetailsViewState extends State<ApartmentDetailsView> {
 
                         SizedBox(height: ResponsiveHelper.height(16)),
 
-                        // Price Card (✅ Minimized)
+                        // Price Card
                         Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: ResponsiveHelper.width(20),
@@ -224,7 +223,7 @@ class _ApartmentDetailsViewState extends State<ApartmentDetailsView> {
 
                         SizedBox(height: ResponsiveHelper.height(16)),
 
-                        // Location Card (✅ Minimized)
+                        // Location Card
                         Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: ResponsiveHelper.width(20),
@@ -237,7 +236,7 @@ class _ApartmentDetailsViewState extends State<ApartmentDetailsView> {
 
                         SizedBox(height: ResponsiveHelper.height(20)),
 
-                        // Amenities (✅ Improved)
+                        // Amenities
                         Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: ResponsiveHelper.width(20),
@@ -262,7 +261,7 @@ class _ApartmentDetailsViewState extends State<ApartmentDetailsView> {
 
                         SizedBox(height: ResponsiveHelper.height(20)),
 
-                        // Description (✅ Minimized)
+                        // Description
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 20),
                           child: DescriptionSection(
@@ -271,9 +270,168 @@ class _ApartmentDetailsViewState extends State<ApartmentDetailsView> {
                           ),
                         ),
 
+                        SizedBox(height: ResponsiveHelper.height(24)),
+
+                        // 🆕 BOOKING SECTION - PAYMENT INTEGRATION
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: ResponsiveHelper.width(20),
+                          ),
+                          child: Container(
+                            padding: EdgeInsets.all(ResponsiveHelper.width(20)),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topRight,
+                                end: Alignment.bottomLeft,
+                                colors: [
+                                  AppColors.primary,
+                                  AppColors.primary.withOpacity(0.8),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                ResponsiveHelper.radius(16),
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.primary.withOpacity(0.3),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  textDirection: TextDirection.rtl,
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.all(
+                                        ResponsiveHelper.width(10),
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.2),
+                                        borderRadius: BorderRadius.circular(
+                                          ResponsiveHelper.radius(10),
+                                        ),
+                                      ),
+                                      child: Icon(
+                                        Icons.event_available_rounded,
+                                        color: Colors.white,
+                                        size: ResponsiveHelper.width(24),
+                                      ),
+                                    ),
+                                    SizedBox(width: ResponsiveHelper.width(12)),
+                                    Expanded(
+                                      child: Text(
+                                        'احجز معاينة الآن',
+                                        style: GoogleFonts.cairo(
+                                          fontSize: ResponsiveHelper.fontSize(
+                                            18,
+                                          ),
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: ResponsiveHelper.height(12)),
+                                Text(
+                                  'ادفع رسوم الحجز لتأكيد موعد المعاينة مع المالك',
+                                  style: GoogleFonts.tajawal(
+                                    fontSize: ResponsiveHelper.fontSize(13),
+                                    color: Colors.white.withOpacity(0.95),
+                                    height: 1.5,
+                                  ),
+                                  textDirection: TextDirection.rtl,
+                                ),
+                                SizedBox(height: ResponsiveHelper.height(16)),
+
+                                // Benefits Row
+                                Row(
+                                  textDirection: TextDirection.rtl,
+                                  children: [
+                                    _buildBenefit(
+                                      Icons.verified_rounded,
+                                      'ضمان الموعد',
+                                    ),
+                                    SizedBox(width: ResponsiveHelper.width(16)),
+                                    _buildBenefit(
+                                      Icons.schedule_rounded,
+                                      'رد سريع',
+                                    ),
+                                    SizedBox(width: ResponsiveHelper.width(16)),
+                                    _buildBenefit(
+                                      Icons.shield_rounded,
+                                      'آمن ومضمون',
+                                    ),
+                                  ],
+                                ),
+
+                                SizedBox(height: ResponsiveHelper.height(16)),
+
+                                // Payment Button
+                                ElevatedButton(
+                                  onPressed: () {
+                                    // ✅ CORRECT - Use full path with leading slash
+                                    context.push(
+                                      '/${RouteNames.paymentMethodSelection}',
+                                      extra: {
+                                        'apartmentTitle':
+                                            'شقة استوديو فاخرة في موقع مميز',
+                                        'amount': 200,
+                                        'apartmentId': 'apt_demo_123',
+                                      },
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    foregroundColor: AppColors.primary,
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: ResponsiveHelper.width(24),
+                                      vertical: ResponsiveHelper.height(14),
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(
+                                        ResponsiveHelper.radius(12),
+                                      ),
+                                    ),
+                                    elevation: 0,
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    textDirection: TextDirection.rtl,
+                                    children: [
+                                      Icon(
+                                        Icons.payments_rounded,
+                                        color: AppColors.primary,
+                                        size: ResponsiveHelper.width(22),
+                                      ),
+                                      SizedBox(
+                                        width: ResponsiveHelper.width(12),
+                                      ),
+                                      Text(
+                                        'ادفع 200 جنيه - احجز الآن',
+                                        style: GoogleFonts.cairo(
+                                          fontSize: ResponsiveHelper.fontSize(
+                                            16,
+                                          ),
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.primary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
                         SizedBox(height: ResponsiveHelper.height(20)),
 
-                        // Enhanced Contact Card (✅ Improved)
+                        // Enhanced Contact Card
                         Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: ResponsiveHelper.width(20),
@@ -288,9 +446,7 @@ class _ApartmentDetailsViewState extends State<ApartmentDetailsView> {
                           ),
                         ),
 
-                        SizedBox(
-                          height: ResponsiveHelper.height(200),
-                        ), // Space for bottom bar
+                        SizedBox(height: ResponsiveHelper.height(100)),
                       ],
                     ),
                   ),
@@ -352,7 +508,7 @@ class _ApartmentDetailsViewState extends State<ApartmentDetailsView> {
               ),
             ),
 
-            // ✅ Bottom Chat Bar (Sticky)
+            // Bottom Chat Bar
             Positioned(
               bottom: 0,
               left: 0,
@@ -373,8 +529,7 @@ class _ApartmentDetailsViewState extends State<ApartmentDetailsView> {
                   top: false,
                   child: GestureDetector(
                     onTap: () {
-                      // Navigate to chat
-                      context.push('/chat/owner123');
+                      context.push(RouteNames.chats);
                     },
                     child: Container(
                       padding: EdgeInsets.symmetric(
@@ -420,7 +575,6 @@ class _ApartmentDetailsViewState extends State<ApartmentDetailsView> {
                 ),
               ),
             ),
-            SizedBox(height: ResponsiveHelper.height(50)), // Space at top
           ],
         ),
       ),
@@ -454,6 +608,25 @@ class _ApartmentDetailsViewState extends State<ApartmentDetailsView> {
           size: ResponsiveHelper.width(22),
         ),
       ),
+    );
+  }
+
+  // 🆕 ADD THIS HELPER METHOD
+  Widget _buildBenefit(IconData icon, String text) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: Colors.white, size: ResponsiveHelper.width(16)),
+        SizedBox(width: ResponsiveHelper.width(4)),
+        Text(
+          text,
+          style: GoogleFonts.tajawal(
+            fontSize: ResponsiveHelper.fontSize(11),
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
     );
   }
 

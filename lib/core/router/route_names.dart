@@ -42,4 +42,9 @@ class RouteNames {
   static const String chatConversation = '/chat-conversation';
   static const String favoritesView = '/favorites-view';
   static const String addApartmentSuccess = '/add-apartment-success';
+  // Add these constants only
+  static const String paymentMethodSelection = 'payment-method-selection';
+  static const String cardPayment = 'card-payment';
+  static const String paymentProcessing = 'payment-processing';
+  static const String paymentSuccess = 'payment-success';
 }

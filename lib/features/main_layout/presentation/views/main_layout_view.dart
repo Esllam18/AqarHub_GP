@@ -60,14 +60,17 @@ class _MainLayoutViewState extends State<MainLayoutView>
 
   List<Widget> get _screens {
     if (widget.isOwner) {
-      return [const OwnerHomeView(), const ChatListView(), const ProfileView()];
+      return [
+        const OwnerHomeView(),
+        const ChatListView(),
+        ProfileView(isOwner: true), // ✅ Pass isOwner = true
+      ];
     }
-
     return [
       const UserHomeView(),
       const ChatListView(),
       const FavoritesView(),
-      const ProfileView(),
+      ProfileView(isOwner: false), // ✅ Pass isOwner = false
     ];
   }
 

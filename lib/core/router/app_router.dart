@@ -12,6 +12,15 @@ import 'package:aqar_hub_gp/features/payment/presentation/views/card_payment_vie
 import 'package:aqar_hub_gp/features/payment/presentation/views/payment_method_selection_view.dart';
 import 'package:aqar_hub_gp/features/payment/presentation/views/payment_processing_view.dart';
 import 'package:aqar_hub_gp/features/payment/presentation/views/payment_success_view.dart';
+import 'package:aqar_hub_gp/features/profile/presentation/views/about_us_view.dart';
+import 'package:aqar_hub_gp/features/profile/presentation/views/edit_profile_view.dart';
+import 'package:aqar_hub_gp/features/profile/presentation/views/help_support_view.dart';
+import 'package:aqar_hub_gp/features/profile/presentation/views/my_properties_view.dart';
+import 'package:aqar_hub_gp/features/profile/presentation/views/notifications_view.dart';
+import 'package:aqar_hub_gp/features/profile/presentation/views/payment_history_view.dart';
+import 'package:aqar_hub_gp/features/profile/presentation/views/privacy_policy_view.dart';
+import 'package:aqar_hub_gp/features/profile/presentation/views/settings_view.dart';
+import 'package:aqar_hub_gp/features/profile/presentation/views/terms_of_service_view.dart';
 import 'package:aqar_hub_gp/features/splash/presentation/cubit/splash_cubit.dart';
 import 'package:aqar_hub_gp/features/splash/presentation/views/splash_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -115,7 +124,7 @@ final GoRouter router = GoRouter(
       name: RouteNames.mainLayout,
       builder: (context, state) {
         final extra = state.extra as Map<String, dynamic>?;
-        final isOwner = extra?['isOwner'] as bool? ?? true;
+        final isOwner = extra?['isOwner'] as bool? ?? false;
         final user = extra?['user'];
         return MainLayoutView(isOwner: isOwner, user: user);
       },
@@ -228,6 +237,43 @@ final GoRouter router = GoRouter(
           transactionId: extra?['transactionId'] ?? 'TXN000000',
         );
       },
+    ),
+
+    GoRoute(
+      path: '/${RouteNames.editProfile}',
+      builder: (context, state) => const EditProfileView(),
+    ),
+    GoRoute(
+      path: '/${RouteNames.myProperties}',
+      builder: (context, state) => const MyPropertiesView(),
+    ),
+    GoRoute(
+      path: '/${RouteNames.paymentHistory}',
+      builder: (context, state) => const PaymentHistoryView(),
+    ),
+    GoRoute(
+      path: '/${RouteNames.settings}',
+      builder: (context, state) => const SettingsView(),
+    ),
+    GoRoute(
+      path: '/${RouteNames.notifications}',
+      builder: (context, state) => const NotificationsView(),
+    ),
+    GoRoute(
+      path: '/${RouteNames.helpSupport}',
+      builder: (context, state) => const HelpSupportView(),
+    ),
+    GoRoute(
+      path: '/${RouteNames.privacyPolicy}',
+      builder: (context, state) => const PrivacyPolicyView(),
+    ),
+    GoRoute(
+      path: '/${RouteNames.termsOfService}',
+      builder: (context, state) => const TermsOfServiceView(),
+    ),
+    GoRoute(
+      path: '/${RouteNames.aboutUs}',
+      builder: (context, state) => const AboutUsView(),
     ),
   ],
 );

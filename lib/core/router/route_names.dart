@@ -47,4 +47,13 @@ class RouteNames {
   static const String cardPayment = 'card-payment';
   static const String paymentProcessing = 'payment-processing';
   static const String paymentSuccess = 'payment-success';
+  // Profile Routes
+  static const String myProperties = 'my-properties';
+  static const String paymentHistory = 'payment-history';
+  static const String settings = 'settings';
+  static const String notifications = 'notifications';
+  static const String helpSupport = 'help-support';
+  static const String privacyPolicy = 'privacy-policy';
+  static const String termsOfService = 'terms-of-service';
+  static const String aboutUs = 'about-us';
 }

@@ -38,22 +38,12 @@ class AboutUsView extends StatelessWidget {
               SizedBox(height: ResponsiveHelper.height(20)),
 
               // App Logo
-              Container(
-                width: ResponsiveHelper.width(120),
-                height: ResponsiveHelper.width(120),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(
-                    ResponsiveHelper.radius(30),
-                  ),
-                ),
-                child: Center(
-                  child: Image.asset(
-                    AppImages.logo,
-                    width: ResponsiveHelper.width(80),
-                    height: ResponsiveHelper.width(80),
-                    fit: BoxFit.contain,
-                  ),
+              Center(
+                child: Image.asset(
+                  AppImages.logo,
+                  width: ResponsiveHelper.width(80),
+                  height: ResponsiveHelper.width(80),
+                  fit: BoxFit.contain,
                 ),
               ),
 

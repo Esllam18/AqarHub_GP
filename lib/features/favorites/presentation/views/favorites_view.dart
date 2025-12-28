@@ -577,7 +577,7 @@ class _FavoritesViewState extends State<FavoritesView>
             SizedBox(width: ResponsiveHelper.width(14)),
             Expanded(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
                     title,

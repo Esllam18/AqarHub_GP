@@ -139,6 +139,7 @@ class UserHomeView extends StatelessWidget {
     return Directionality(
       textDirection: TextDirection.rtl,
       child: Scaffold(
+        appBar: null,
         backgroundColor: AppColors.background,
         body: CustomScrollView(
           slivers: [
@@ -152,7 +153,6 @@ class UserHomeView extends StatelessWidget {
               floating: true, // ✅ Changed: App bar floats when scrolling up
               snap: true, // ✅ Added: Snaps into view completely
               pinned: false, // ✅ Changed: Not always pinned, only when expanded
-              backgroundColor: AppColors.primary,
               elevation: 0,
               flexibleSpace: FlexibleSpaceBar(
                 background: Container(
@@ -161,6 +161,10 @@ class UserHomeView extends StatelessWidget {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [AppColors.primary, AppColors.secondary],
+                    ),
+                    borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(ResponsiveHelper.radius(20)),
+                      bottomRight: Radius.circular(ResponsiveHelper.radius(20)),
                     ),
                   ),
                   child: SafeArea(

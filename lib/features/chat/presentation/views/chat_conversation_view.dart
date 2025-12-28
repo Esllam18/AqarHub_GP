@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:aqar_hub_gp/core/consts/app_colors.dart';
 import 'package:aqar_hub_gp/core/utils/responsive_helper.dart';
-import 'package:go_router/go_router.dart';
 import '../../models/chat_model.dart';
 import '../../models/message_model.dart';
 import '../widgets/message_bubble.dart';
 import '../widgets/chat_input_field.dart';
+import '../widgets/conversation/chat_app_bar.dart';
+import '../widgets/conversation/apartment_info_banner.dart';
+import '../widgets/conversation/typing_indicator.dart';
+import '../widgets/conversation/scroll_to_bottom_button.dart';
 
 class ChatConversationView extends StatefulWidget {
   final ChatModel chat;
@@ -20,7 +22,6 @@ class ChatConversationView extends StatefulWidget {
 class _ChatConversationViewState extends State<ChatConversationView> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-
   late List<MessageModel> _messages;
   bool _showScrollToBottom = false;
   bool _isOtherUserTyping = false;
@@ -28,6 +29,12 @@ class _ChatConversationViewState extends State<ChatConversationView> {
   @override
   void initState() {
     super.initState();
+    _initializeMessages();
+    _setupScrollListener();
+    _simulateTypingIndicator();
+  }
+
+  void _initializeMessages() {
     _messages = [
       MessageModel(
         id: '1',
@@ -87,25 +94,21 @@ class _ChatConversationViewState extends State<ChatConversationView> {
         isRead: false,
       ),
     ];
+  }
 
+  void _setupScrollListener() {
     _scrollController.addListener(_onScroll);
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToBottom(animate: false);
     });
+  }
 
-    // Simulate typing indicator after 3 seconds
+  void _simulateTypingIndicator() {
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
-        setState(() {
-          _isOtherUserTyping = true;
-        });
+        setState(() => _isOtherUserTyping = true);
         Future.delayed(const Duration(seconds: 2), () {
-          if (mounted) {
-            setState(() {
-              _isOtherUserTyping = false;
-            });
-          }
+          if (mounted) setState(() => _isOtherUserTyping = false);
         });
       }
     });
@@ -116,11 +119,8 @@ class _ChatConversationViewState extends State<ChatConversationView> {
       final maxScroll = _scrollController.position.maxScrollExtent;
       final currentScroll = _scrollController.offset;
       final shouldShow = maxScroll - currentScroll > 200;
-
       if (shouldShow != _showScrollToBottom) {
-        setState(() {
-          _showScrollToBottom = shouldShow;
-        });
+        setState(() => _showScrollToBottom = shouldShow);
       }
     }
   }
@@ -141,7 +141,6 @@ class _ChatConversationViewState extends State<ChatConversationView> {
 
   void _sendMessage() {
     if (_messageController.text.trim().isEmpty) return;
-
     setState(() {
       _messages.add(
         MessageModel(
@@ -153,7 +152,6 @@ class _ChatConversationViewState extends State<ChatConversationView> {
         ),
       );
     });
-
     _messageController.clear();
     _scrollToBottom();
   }
@@ -178,325 +176,43 @@ class _ChatConversationViewState extends State<ChatConversationView> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         backgroundColor: AppColors.background,
-        appBar: _buildAppBar(),
+        appBar: ChatAppBar(chat: widget.chat, isTyping: _isOtherUserTyping),
         body: Stack(
           children: [
             Column(
               children: [
-                _buildApartmentInfoBanner(),
-                Expanded(
-                  child: ListView.builder(
-                    controller: _scrollController,
-                    padding: EdgeInsets.symmetric(
-                      vertical: ResponsiveHelper.height(8),
-                    ),
-                    itemCount: _messages.length + (_isOtherUserTyping ? 1 : 0),
-                    itemBuilder: (context, index) {
-                      if (index == _messages.length && _isOtherUserTyping) {
-                        return _buildTypingIndicator();
-                      }
-                      final message = _messages[index];
-                      return MessageBubble(
-                        message: message,
-                        onReply: () {
-                          // TODO: Implement reply
-                        },
-                      );
-                    },
-                  ),
-                ),
+                const ApartmentInfoBanner(),
+                Expanded(child: _buildMessagesList()),
                 ChatInputField(
                   controller: _messageController,
                   onSend: _sendMessage,
                 ),
               ],
             ),
-
-            // Scroll to Bottom FAB
             if (_showScrollToBottom)
-              Positioned(
-                bottom: ResponsiveHelper.height(100),
-                left: ResponsiveHelper.width(16),
-                child: AnimatedOpacity(
-                  opacity: _showScrollToBottom ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 200),
-                  child: GestureDetector(
-                    onTap: _scrollToBottom,
-                    child: Container(
-                      width: ResponsiveHelper.width(48),
-                      height: ResponsiveHelper.width(48),
-                      decoration: BoxDecoration(
-                        color: AppColors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.15),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                        color: AppColors.primary,
-                        size: ResponsiveHelper.width(28),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+              ScrollToBottomButton(onTap: _scrollToBottom),
           ],
         ),
       ),
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      backgroundColor: AppColors.white,
-      elevation: 0,
-      leading: IconButton(
-        icon: Icon(
-          Icons.arrow_forward_rounded,
-          color: Colors.black87,
-          size: ResponsiveHelper.width(24),
-        ),
-        onPressed: () => context.pop(),
-      ),
-      title: Row(
-        textDirection: TextDirection.rtl,
-        children: [
-          Stack(
-            children: [
-              Container(
-                width: ResponsiveHelper.width(42),
-                height: ResponsiveHelper.width(42),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: widget.chat.isOnline
-                        ? AppColors.success
-                        : Colors.grey.shade300,
-                    width: 2,
-                  ),
-                ),
-                child: ClipOval(
-                  child: Image.network(
-                    widget.chat.userImage,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: Colors.grey.shade200,
-                        child: Icon(
-                          Icons.person,
-                          size: ResponsiveHelper.width(20),
-                          color: Colors.grey.shade400,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-              if (widget.chat.isOnline)
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  child: Container(
-                    width: ResponsiveHelper.width(12),
-                    height: ResponsiveHelper.width(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.success,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.white, width: 2),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          SizedBox(width: ResponsiveHelper.width(10)),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.chat.userName,
-                style: GoogleFonts.cairo(
-                  fontSize: ResponsiveHelper.fontSize(16),
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              if (_isOtherUserTyping)
-                Text(
-                  'يكتب الآن...',
-                  style: GoogleFonts.tajawal(
-                    fontSize: ResponsiveHelper.fontSize(11),
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  textDirection: TextDirection.rtl,
-                )
-              else if (widget.chat.isOnline)
-                Text(
-                  'متصل الآن',
-                  style: GoogleFonts.tajawal(
-                    fontSize: ResponsiveHelper.fontSize(11),
-                    color: AppColors.success,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  textDirection: TextDirection.rtl,
-                ),
-            ],
-          ),
-        ],
-      ),
-      actions: [
-        IconButton(
-          icon: Icon(
-            Icons.call_rounded,
-            color: AppColors.primary,
-            size: ResponsiveHelper.width(22),
-          ),
-          onPressed: () {},
-        ),
-        IconButton(
-          icon: Icon(
-            Icons.more_vert_rounded,
-            color: Colors.black87,
-            size: ResponsiveHelper.width(22),
-          ),
-          onPressed: () {},
-        ),
-      ],
-    );
-  }
-
-  Widget _buildApartmentInfoBanner() {
-    return Container(
-      margin: EdgeInsets.all(ResponsiveHelper.width(12)),
-      padding: EdgeInsets.all(ResponsiveHelper.width(12)),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.primary.withOpacity(0.1),
-            AppColors.secondary.withOpacity(0.1),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(ResponsiveHelper.radius(12)),
-        border: Border.all(color: AppColors.primary.withOpacity(0.2), width: 1),
-      ),
-      child: Row(
-        textDirection: TextDirection.rtl,
-        children: [
-          Container(
-            width: ResponsiveHelper.width(60),
-            height: ResponsiveHelper.width(60),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(ResponsiveHelper.radius(10)),
-            ),
-            child: Icon(
-              Icons.apartment_rounded,
-              color: AppColors.primary,
-              size: ResponsiveHelper.width(30),
-            ),
-          ),
-          SizedBox(width: ResponsiveHelper.width(12)),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'شقة استوديو فاخرة',
-                  style: GoogleFonts.cairo(
-                    fontSize: ResponsiveHelper.fontSize(14),
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                  textDirection: TextDirection.rtl,
-                ),
-                SizedBox(height: ResponsiveHelper.height(4)),
-                Text(
-                  'مدينة نصر، القاهرة • 3,500 جنيه/شهر',
-                  style: GoogleFonts.tajawal(
-                    fontSize: ResponsiveHelper.fontSize(11),
-                    color: Colors.grey.shade600,
-                  ),
-                  textDirection: TextDirection.rtl,
-                ),
-              ],
-            ),
-          ),
-          Icon(
-            Icons.chevron_left_rounded,
-            color: AppColors.primary,
-            size: ResponsiveHelper.width(20),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTypingIndicator() {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-        horizontal: ResponsiveHelper.width(12),
-        vertical: ResponsiveHelper.height(8),
-      ),
-      child: Align(
-        alignment: AlignmentDirectional.centerStart,
-        child: Container(
-          padding: EdgeInsets.symmetric(
-            horizontal: ResponsiveHelper.width(16),
-            vertical: ResponsiveHelper.height(12),
-          ),
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            borderRadius: BorderRadius.circular(ResponsiveHelper.radius(20)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildDot(0),
-              SizedBox(width: ResponsiveHelper.width(4)),
-              _buildDot(1),
-              SizedBox(width: ResponsiveHelper.width(4)),
-              _buildDot(2),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDot(int index) {
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.0, end: 1.0),
-      duration: const Duration(milliseconds: 600),
-      builder: (context, value, child) {
-        final animationValue = ((value + index * 0.3) % 1.0);
-        return Transform.translate(
-          offset: Offset(0, -5 * (1 - (animationValue - 0.5).abs() * 2)),
-          child: Container(
-            width: ResponsiveHelper.width(8),
-            height: ResponsiveHelper.width(8),
-            decoration: BoxDecoration(
-              color: Colors.grey.shade400,
-              shape: BoxShape.circle,
-            ),
-          ),
-        );
-      },
-      onEnd: () {
-        if (mounted) {
-          setState(() {});
+  Widget _buildMessagesList() {
+    return ListView.builder(
+      controller: _scrollController,
+      padding: EdgeInsets.symmetric(vertical: ResponsiveHelper.height(8)),
+      itemCount: _messages.length + (_isOtherUserTyping ? 1 : 0),
+      itemBuilder: (context, index) {
+        if (index == _messages.length && _isOtherUserTyping) {
+          return const TypingIndicator();
         }
+        final message = _messages[index];
+        return MessageBubble(
+          message: message,
+          onReply: () {
+            // TODO: Implement reply
+          },
+        );
       },
     );
   }

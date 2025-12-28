@@ -1,8 +1,8 @@
+import 'package:aqar_hub_gp/core/locations/egyptian_locations.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:aqar_hub_gp/core/consts/app_colors.dart';
 import 'package:aqar_hub_gp/core/utils/responsive_helper.dart';
-import '../../../data/egyptian_locations.dart';
 import '../../widgets/custom_step_button.dart';
 
 class LocationStep extends StatefulWidget {

@@ -19,7 +19,7 @@ class CustomBottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Directionality(
-      textDirection: TextDirection.rtl, // RTL for entire nav bar
+      textDirection: TextDirection.rtl,
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.white,
@@ -48,7 +48,7 @@ class CustomBottomNavBar extends StatelessWidget {
   Widget _buildUserNavBar() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
-      textDirection: TextDirection.rtl, // RTL for user nav bar
+      textDirection: TextDirection.rtl,
       children: [
         _buildNavItem(
           icon: Icons.home_rounded,
@@ -77,14 +77,13 @@ class CustomBottomNavBar extends StatelessWidget {
   Widget _buildOwnerNavBar() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
-      textDirection: TextDirection.rtl, // RTL for owner nav bar
+      textDirection: TextDirection.rtl,
       children: [
         _buildNavItem(
           icon: Icons.dashboard_rounded,
           label: HomeStrings.navDashboard,
           index: 0,
         ),
-        // SizedBox(width: ResponsiveHelper.width(60)), // Space for FAB
         _buildNavItem(
           icon: Icons.chat_bubble_rounded,
           label: HomeStrings.navChats,
@@ -105,7 +104,6 @@ class CustomBottomNavBar extends StatelessWidget {
     required int index,
   }) {
     final isSelected = currentIndex == index;
-
     return Expanded(
       child: InkWell(
         onTap: () => onTap(index),
@@ -126,7 +124,6 @@ class CustomBottomNavBar extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Icon with animation
               AnimatedContainer(
                 duration: const Duration(milliseconds: 250),
                 curve: Curves.easeInOut,
@@ -137,7 +134,6 @@ class CustomBottomNavBar extends StatelessWidget {
                 ),
               ),
               SizedBox(height: ResponsiveHelper.height(3)),
-              // Label with Tajawal font and RTL
               Flexible(
                 child: Text(
                   label,
@@ -150,7 +146,7 @@ class CustomBottomNavBar extends StatelessWidget {
                     height: 1.1,
                   ),
                   textAlign: TextAlign.center,
-                  textDirection: TextDirection.rtl, // RTL for label text
+                  textDirection: TextDirection.rtl,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

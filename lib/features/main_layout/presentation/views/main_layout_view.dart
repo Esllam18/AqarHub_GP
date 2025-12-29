@@ -1,15 +1,14 @@
-import 'package:aqar_hub_gp/core/router/route_names.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:aqar_hub_gp/core/consts/app_colors.dart';
-import 'package:aqar_hub_gp/core/utils/responsive_helper.dart';
+import 'package:aqar_hub_gp/core/router/route_names.dart';
 import 'package:aqar_hub_gp/features/home_seeker/presentation/views/user_home_view.dart';
 import 'package:aqar_hub_gp/features/chat/presentation/views/chat_list_view.dart';
 import 'package:aqar_hub_gp/features/favorites/presentation/views/favorites_view.dart';
 import 'package:aqar_hub_gp/features/profile/presentation/views/profile_view.dart';
 import 'package:aqar_hub_gp/features/owner/presentation/views/owner_home_view.dart';
 import '../widgets/custom_bottom_nav_bar.dart';
+import '../widgets/animated_fab_button.dart';
 
 class MainLayoutView extends StatefulWidget {
   final bool isOwner;
@@ -32,23 +31,7 @@ class _MainLayoutViewState extends State<MainLayoutView>
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: 0);
-
-    // FAB Animation Controller
-    _fabAnimationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
-
-    _fabScaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _fabAnimationController,
-        curve: Curves.easeOutBack,
-      ),
-    );
-
-    if (widget.isOwner) {
-      _fabAnimationController.forward();
-    }
+    _initializeFabAnimation();
   }
 
   @override
@@ -58,27 +41,71 @@ class _MainLayoutViewState extends State<MainLayoutView>
     super.dispose();
   }
 
-  List<Widget> get _screens {
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        body: PageView(
+          controller: _pageController,
+          onPageChanged: (index) => setState(() => _currentIndex = index),
+          physics: const NeverScrollableScrollPhysics(),
+          children: _getScreens(),
+        ),
+        bottomNavigationBar: CustomBottomNavBar(
+          currentIndex: _currentIndex,
+          onTap: _onItemTapped,
+          isOwner: widget.isOwner,
+        ),
+        floatingActionButton: widget.isOwner
+            ? AnimatedFabButton(
+                scaleAnimation: _fabScaleAnimation,
+                onPressed: _onAddButtonPressed,
+              )
+            : null,
+        floatingActionButtonLocation: widget.isOwner
+            ? FloatingActionButtonLocation.endFloat
+            : null,
+      ),
+    );
+  }
+
+  void _initializeFabAnimation() {
+    _fabAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _fabScaleAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _fabAnimationController,
+        curve: Curves.easeOutBack,
+      ),
+    );
+    if (widget.isOwner) {
+      _fabAnimationController.forward();
+    }
+  }
+
+  List<Widget> _getScreens() {
     if (widget.isOwner) {
       return [
         const OwnerHomeView(),
         const ChatListView(),
-        ProfileView(isOwner: true), // ✅ Pass isOwner = true
+        ProfileView(isOwner: true),
       ];
     }
     return [
       const UserHomeView(),
       const ChatListView(),
       const FavoritesView(),
-      ProfileView(isOwner: false), // ✅ Pass isOwner = false
+      ProfileView(isOwner: false),
     ];
   }
 
   void _onItemTapped(int index) {
-    if (_currentIndex == index) return; // Prevent unnecessary rebuilds
-    setState(() {
-      _currentIndex = index;
-    });
+    if (_currentIndex == index) return;
+    setState(() => _currentIndex = index);
     _pageController.animateToPage(
       index,
       duration: const Duration(milliseconds: 300),
@@ -87,96 +114,6 @@ class _MainLayoutViewState extends State<MainLayoutView>
   }
 
   void _onAddButtonPressed() {
-    // TODO: Navigate to Add Apartment Screen
     context.push(RouteNames.addApartment);
-
-    // Temporary feedback with RTL
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Directionality(
-          textDirection: TextDirection.rtl,
-          child: Text(
-            'انتقال إلى شاشة إضافة عقار',
-            style: GoogleFonts.tajawal(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-            textDirection: TextDirection.rtl,
-          ),
-        ),
-        backgroundColor: AppColors.primary,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl, // RTL for entire layout
-      child: Scaffold(
-        backgroundColor: AppColors.background,
-        body: PageView(
-          controller: _pageController,
-          onPageChanged: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-          physics: const NeverScrollableScrollPhysics(), // Disable swipe
-          children: _screens,
-        ),
-        bottomNavigationBar: CustomBottomNavBar(
-          currentIndex: _currentIndex,
-          onTap: _onItemTapped,
-          isOwner: widget.isOwner,
-        ),
-        floatingActionButton: widget.isOwner
-            ? ScaleTransition(
-                scale: _fabScaleAnimation,
-                child: Container(
-                  width: ResponsiveHelper.width(60),
-                  height: ResponsiveHelper.width(60),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [AppColors.primary, AppColors.secondary],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(
-                      ResponsiveHelper.radius(16),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primary.withOpacity(0.4),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: _onAddButtonPressed,
-                      borderRadius: BorderRadius.circular(
-                        ResponsiveHelper.radius(16),
-                      ),
-                      child: Icon(
-                        Icons.add_rounded,
-                        color: AppColors.white,
-                        size: ResponsiveHelper.width(32),
-                      ),
-                    ),
-                  ),
-                ),
-              )
-            : null,
-        floatingActionButtonLocation: widget.isOwner
-            ? FloatingActionButtonLocation.endFloat
-            : null,
-      ),
-    );
   }
 }

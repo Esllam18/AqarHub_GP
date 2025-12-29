@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:aqar_hub_gp/core/consts/app_colors.dart';
 import 'package:aqar_hub_gp/core/utils/responsive_helper.dart';
 import 'search_apartment_results.dart';
-import '../views/smart_search_view.dart';
+import '../../views/smart_search_view.dart';
 
 class SearchMessageBubble extends StatelessWidget {
   final ChatMessage message;

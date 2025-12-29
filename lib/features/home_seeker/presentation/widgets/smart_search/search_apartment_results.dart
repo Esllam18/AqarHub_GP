@@ -5,7 +5,7 @@ import 'package:aqar_hub_gp/core/consts/app_colors.dart';
 import 'package:aqar_hub_gp/core/consts/home_strings.dart';
 import 'package:aqar_hub_gp/core/utils/responsive_helper.dart';
 import 'package:aqar_hub_gp/core/router/route_names.dart';
-import 'apartment_list_item.dart';
+import '../shared/apartment_list_item.dart';
 
 class SearchApartmentResults extends StatelessWidget {
   final List<Map<String, dynamic>> searchResults;

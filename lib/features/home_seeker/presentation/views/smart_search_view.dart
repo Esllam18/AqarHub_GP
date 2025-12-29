@@ -1,12 +1,13 @@
+import 'package:aqar_hub_gp/features/home_seeker/data/apartments_list.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:aqar_hub_gp/core/consts/app_colors.dart';
 import 'package:aqar_hub_gp/core/consts/home_strings.dart';
 import 'package:aqar_hub_gp/core/utils/responsive_helper.dart';
-import '../widgets/search_quick_suggestions.dart';
-import '../widgets/search_typing_indicator.dart';
-import '../widgets/search_message_bubble.dart';
-import '../widgets/search_input_field.dart';
+import '../widgets/smart_search/search_quick_suggestions.dart';
+import '../widgets/smart_search/search_typing_indicator.dart';
+import '../widgets/smart_search/search_message_bubble.dart';
+import '../widgets/smart_search/search_input_field.dart';
 
 class SmartSearchView extends StatefulWidget {
   const SmartSearchView({super.key});
@@ -20,79 +21,6 @@ class _SmartSearchViewState extends State<SmartSearchView> {
   final ScrollController _scrollController = ScrollController();
   final List<ChatMessage> _messages = [];
   bool _isTyping = false;
-
-  final List<Map<String, dynamic>> _searchResults = const [
-    {
-      'title': 'شقة استوديو حديثة بالقرب من الجامعة',
-      'location': 'مدينة نصر، القاهرة',
-      'price': 3200,
-      'imageUrl':
-          'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800',
-      'bedrooms': 1,
-      'bathrooms': 1,
-      'area': 65,
-      'rating': 4.7,
-      'reviewCount': 156,
-      'isVerified': true,
-      'isFeatured': true,
-    },
-    {
-      'title': 'شقة عائلية مفروشة بالكامل',
-      'location': 'التجمع الخامس، القاهرة الجديدة',
-      'price': 5800,
-      'imageUrl':
-          'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800',
-      'bedrooms': 3,
-      'bathrooms': 2,
-      'area': 130,
-      'rating': 4.9,
-      'reviewCount': 203,
-      'isVerified': true,
-      'badge': 'عرض خاص',
-    },
-    {
-      'title': 'استوديو اقتصادي بموقع ممتاز',
-      'location': 'المعادي، القاهرة',
-      'price': 2500,
-      'imageUrl':
-          'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800',
-      'bedrooms': 1,
-      'bathrooms': 1,
-      'area': 50,
-      'rating': 4.5,
-      'reviewCount': 89,
-      'isVerified': true,
-      'badge': 'أقل سعر',
-    },
-    {
-      'title': 'شقة فاخرة مع إطلالة بانورامية',
-      'location': 'الزمالك، القاهرة',
-      'price': 7500,
-      'imageUrl':
-          'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=800',
-      'bedrooms': 2,
-      'bathrooms': 2,
-      'area': 110,
-      'rating': 4.8,
-      'reviewCount': 267,
-      'isFeatured': true,
-      'isVerified': true,
-    },
-    {
-      'title': 'شقة دوبلكس مع حديقة خاصة',
-      'location': 'الشيخ زايد، الجيزة',
-      'price': 8200,
-      'imageUrl':
-          'https://images.unsplash.com/photo-1494526585095-c41746248156?w=800',
-      'bedrooms': 4,
-      'bathrooms': 3,
-      'area': 200,
-      'rating': 5.0,
-      'reviewCount': 142,
-      'isVerified': true,
-      'badge': 'جديد',
-    },
-  ];
 
   @override
   void initState() {
@@ -249,7 +177,7 @@ class _SmartSearchViewState extends State<SmartSearchView> {
                   }
                   return SearchMessageBubble(
                     message: _messages[index],
-                    searchResults: _searchResults,
+                    searchResults: searchResults,
                   );
                 },
               ),

@@ -16,7 +16,6 @@ class PaymentSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final total = amount + serviceFee;
-
     return Container(
       padding: EdgeInsets.all(ResponsiveHelper.width(20)),
       decoration: BoxDecoration(
@@ -47,27 +46,7 @@ class PaymentSummaryCard extends StatelessWidget {
           SizedBox(height: ResponsiveHelper.height(12)),
           Divider(color: AppColors.primary.withOpacity(0.3)),
           SizedBox(height: ResponsiveHelper.height(12)),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'الإجمالي',
-                style: GoogleFonts.cairo(
-                  fontSize: ResponsiveHelper.fontSize(16),
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
-                ),
-              ),
-              Text(
-                '$total جنيه',
-                style: GoogleFonts.cairo(
-                  fontSize: ResponsiveHelper.fontSize(20),
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
-                ),
-              ),
-            ],
-          ),
+          _buildTotalRow(total),
         ],
       ),
     );
@@ -90,6 +69,30 @@ class PaymentSummaryCard extends StatelessWidget {
             fontSize: ResponsiveHelper.fontSize(14),
             fontWeight: FontWeight.w600,
             color: Colors.black87,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTotalRow(int total) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          'الإجمالي',
+          style: GoogleFonts.cairo(
+            fontSize: ResponsiveHelper.fontSize(16),
+            fontWeight: FontWeight.bold,
+            color: AppColors.primary,
+          ),
+        ),
+        Text(
+          '$total جنيه',
+          style: GoogleFonts.cairo(
+            fontSize: ResponsiveHelper.fontSize(20),
+            fontWeight: FontWeight.bold,
+            color: AppColors.primary,
           ),
         ),
       ],
